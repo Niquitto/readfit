@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ReadFit — Speed Reading Trainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#080810;
+  --s1:#10101e;
+  --s2:#18182e;
+  --s3:#20203a;
+  --border:rgba(150,140,255,0.10);
+  --a:#a5b4fc;--a2:#818cf8;--a-dim:rgba(165,180,252,0.12);
+  --g:#34d399;--g-dim:rgba(52,211,153,0.14);
+  --y:#fbbf24;--y-dim:rgba(251,191,36,0.14);
+  --r:#f87171;--r-dim:rgba(248,113,113,0.14);
+  --t:#f0f0fc;--tm:#a0a0c0;--td:#5a5a80;
+  --fn:'Syne',sans-serif;--fb:'DM Sans',sans-serif;
+  --rad:18px;--rad-sm:10px;
+}
+html,body{height:100%;background:var(--bg);font-family:var(--fb);color:var(--t);overflow:hidden;}
+#app{height:100vh;display:flex;flex-direction:column;max-width:520px;margin:0 auto;position:relative;}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;bottom:64px;overflow-y:auto;padding:20px 20px 12px;display:none;flex-direction:column;gap:16px;scrollbar-width:none;}
+.screen::-webkit-scrollbar{display:none;}
+.screen.active{display:flex;}
+.screen.flow{bottom:0;padding-bottom:20px;}
+
+/* ── BOTTOM NAV ── */
+#nav{position:absolute;bottom:0;left:0;right:0;height:64px;background:var(--s1);border-top:1px solid var(--border);display:flex;z-index:100;}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;color:var(--td);cursor:pointer;font-family:var(--fb);font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;}
+.nav-btn svg{width:20px;height:20px;transition:transform .2s;}
+.nav-btn.active{color:var(--a);}
+.nav-btn.active svg{transform:scale(1.1);}
+.nav-btn:hover{color:var(--tm);}
+
+/* ── TYPOGRAPHY ── */
+h1,h2,h3{font-family:var(--fn);}
+.label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--td);font-weight:600;}
+.title{font-size:28px;font-weight:800;line-height:1.1;}
+.hero-num{font-family:var(--fn);font-size:64px;font-weight:800;line-height:1;color:var(--t);}
+.hero-unit{font-family:var(--fn);font-size:16px;font-weight:600;color:var(--tm);margin-left:4px;}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:20px;}
+.card-sm{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:14px 16px;}
+.card-row{display:flex;gap:10px;}
+.card-row .card-sm{flex:1;text-align:center;}
+
+/* ── BUTTONS ── */
+.btn{display:block;width:100%;padding:16px;border:none;border-radius:var(--rad-sm);font-family:var(--fn);font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;text-align:center;}
+.btn-primary{background:var(--a2);color:#080810;}
+.btn-primary:hover{background:var(--a);transform:translateY(-1px);}
+.btn-ghost{background:var(--s2);color:var(--t);border:1px solid var(--border);}
+.btn-ghost:hover{border-color:var(--a);color:var(--a);}
+.btn-sm{padding:10px 20px;font-size:12px;width:auto;display:inline-block;}
+.btn-icon{display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-row{display:flex;gap:10px;}
+.btn-row .btn{flex:1;}
+.btn-danger{background:var(--r-dim);color:var(--r);border:1px solid rgba(248,113,113,0.2);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.5px;}
+.badge-accent{background:var(--a-dim);color:var(--a);}
+.badge-green{background:var(--g-dim);color:var(--g);}
+.badge-yellow{background:var(--y-dim);color:var(--y);}
+.badge-red{background:var(--r-dim);color:var(--r);}
+
+/* ── HOME SCREEN ── */
+#s-home{}
+.home-header{display:flex;align-items:center;justify-content:space-between;}
+.home-logo{font-family:var(--fn);font-size:22px;font-weight:800;letter-spacing:-1px;color:var(--t);}
+.home-logo span{color:var(--a);}
+.streak-pill{display:flex;align-items:center;gap:6px;background:var(--y-dim);border:1px solid rgba(251,191,36,.2);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--y);}
+
+.wpm-card{text-align:center;padding:28px 20px;position:relative;overflow:hidden;}
+.wpm-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 110%, rgba(129,140,248,0.08) 0%, transparent 70%);}
+.wpm-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 16px;}
+.wpm-svg{width:160px;height:160px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--s3);stroke-width:8;}
+.ring-fill{fill:none;stroke:var(--a2);stroke-width:8;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-wpm{font-family:var(--fn);font-size:38px;font-weight:800;line-height:1;}
+.ring-label{font-size:10px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-top:4px;}
+.wpm-level{font-size:13px;color:var(--tm);margin-top:4px;}
+
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:14px;text-align:center;}
+.stat-num{font-family:var(--fn);font-size:22px;font-weight:800;color:var(--t);}
+.stat-lbl{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+
+.mode-cards{display:flex;flex-direction:column;gap:10px;}
+.mode-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:18px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.mode-card:hover{border-color:var(--a);background:var(--s2);transform:translateY(-1px);}
+.mode-card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.mc-test .mode-card-icon{background:var(--a-dim);}
+.mc-rsvp .mode-card-icon{background:var(--g-dim);}
+.mode-card-text{flex:1;}
+.mode-card-title{font-family:var(--fn);font-size:16px;font-weight:700;margin-bottom:3px;}
+.mode-card-desc{font-size:12px;color:var(--tm);line-height:1.4;}
+.mode-card-arrow{color:var(--td);font-size:18px;}
+
+/* ── TRAIN FLOW HEADER ── */
+.flow-header{display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tm);transition:all .2s;flex-shrink:0;}
+.back-btn:hover{color:var(--t);border-color:var(--a);}
+.flow-title{font-family:var(--fn);font-size:16px;font-weight:700;flex:1;}
+.step-pip{display:flex;gap:5px;align-items:center;}
+.pip{width:6px;height:6px;border-radius:3px;background:var(--s3);transition:all .3s;}
+.pip.done{background:var(--g);width:16px;}
+.pip.active{background:var(--a);}
+
+/* ── PASSAGE SELECT ── */
+.passage-grid{display:flex;flex-direction:column;gap:10px;}
+.passage-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:18px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:16px;}
+.passage-card:hover{border-color:var(--a);background:var(--s2);}
+.passage-card.selected{border-color:var(--a);background:var(--a-dim);}
+.p-icon{width:44px;height:44px;border-radius:12px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.p-meta{flex:1;}
+.p-title{font-family:var(--fn);font-size:15px;font-weight:700;margin-bottom:3px;}
+.p-genre{font-size:11px;color:var(--tm);}
+.p-words{font-size:11px;color:var(--td);margin-top:4px;}
+
+/* ── READING SCREEN ── */
+#s-reading{}
+.reading-timer{font-family:var(--fn);font-size:48px;font-weight:800;text-align:center;color:var(--a);letter-spacing:-2px;}
+.reading-status{text-align:center;font-size:13px;color:var(--tm);margin-top:4px;}
+.reading-text{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:24px;font-size:16px;line-height:1.8;color:var(--t);font-weight:400;white-space:pre-wrap;}
+.reading-hint{font-size:12px;color:var(--td);text-align:center;}
+
+/* ── RSVP ── */
+#s-rsvp{background:var(--bg);}
+.rsvp-controls{display:flex;align-items:center;justify-content:center;gap:16px;}
+.rsvp-wpm-display{font-family:var(--fn);font-size:22px;font-weight:800;color:var(--t);min-width:80px;text-align:center;}
+.rsvp-wpm-label{font-size:10px;color:var(--tm);letter-spacing:1px;text-align:center;margin-top:2px;}
+.speed-btn{width:40px;height:40px;border-radius:12px;background:var(--s2);border:1px solid var(--border);color:var(--tm);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--fn);font-weight:700;}
+.speed-btn:hover{color:var(--t);border-color:var(--a);}
+
+.rsvp-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+.rsvp-word-wrap{position:relative;text-align:center;padding:20px 0;}
+.rsvp-focal{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:2px;height:24px;background:var(--r);border-radius:1px;opacity:0.6;}
+.rsvp-word{font-family:var(--fn);font-size:54px;font-weight:800;color:var(--t);letter-spacing:-1px;line-height:1;transition:opacity 0.05s;min-height:70px;display:flex;align-items:center;justify-content:center;min-width:300px;}
+.rsvp-count{font-size:13px;color:var(--td);margin-top:16px;font-family:var(--fn);}
+.rsvp-progress{width:100%;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:16px;}
+.rsvp-progress-fill{height:100%;background:linear-gradient(90deg,var(--a2),var(--g));border-radius:2px;transition:width .1s linear;}
+.rsvp-play-btn{width:64px;height:64px;border-radius:50%;border:none;background:var(--a2);color:#080810;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;margin:0 auto;}
+.rsvp-play-btn:hover{background:var(--a);transform:scale(1.05);}
+.rsvp-ready{text-align:center;padding:24px;display:flex;flex-direction:column;gap:16px;align-items:center;}
+.rsvp-ready-title{font-family:var(--fn);font-size:20px;font-weight:700;}
+.rsvp-ready-sub{font-size:14px;color:var(--tm);}
+
+/* ── QUIZ ── */
+#s-quiz{}
+.quiz-q{font-family:var(--fn);font-size:20px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.quiz-num{font-size:12px;color:var(--tm);margin-bottom:12px;}
+.quiz-opts{display:flex;flex-direction:column;gap:10px;}
+.quiz-opt{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--rad-sm);padding:14px 18px;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s;text-align:left;color:var(--t);font-family:var(--fb);}
+.quiz-opt:hover:not(.answered){border-color:var(--a);background:var(--a-dim);color:var(--a);}
+.quiz-opt.correct{border-color:var(--g)!important;background:var(--g-dim)!important;color:var(--g)!important;}
+.quiz-opt.wrong{border-color:var(--r)!important;background:var(--r-dim)!important;color:var(--r)!important;}
+.quiz-opt.answered{cursor:default;}
+.quiz-progress{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.quiz-progress-fill{height:100%;background:var(--a2);border-radius:2px;transition:width .3s ease;}
+
+/* ── RESULTS ── */
+#s-results{}
+.results-hero{text-align:center;padding:16px 0;}
+.results-grade{font-family:var(--fn);font-size:72px;font-weight:800;line-height:1;}
+.results-subtitle{font-size:14px;color:var(--tm);margin-top:8px;}
+.results-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.metric-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:20px;text-align:center;}
+.metric-val{font-family:var(--fn);font-size:36px;font-weight:800;margin-bottom:4px;}
+.metric-lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--tm);}
+.insight-card{background:var(--s2);border-radius:var(--rad);padding:18px;border-left:3px solid var(--a);}
+.insight-text{font-size:13px;color:var(--tm);line-height:1.6;}
+.answers-list{display:flex;flex-direction:column;gap:8px;}
+.ans-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--rad-sm);font-size:12px;}
+.ans-item.ok{background:var(--g-dim);}
+.ans-item.bad{background:var(--r-dim);}
+.ans-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.ans-text{flex:1;line-height:1.4;}
+.ans-correct{color:var(--td);font-style:italic;margin-top:2px;}
+
+/* ── HISTORY ── */
+#s-history{}
+.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:20px;}
+.sessions-list{display:flex;flex-direction:column;gap:8px;}
+.sess-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:12px 16px;display:flex;align-items:center;gap:14px;}
+.sess-mode{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.sess-info{flex:1;}
+.sess-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.sess-date{font-size:11px;color:var(--td);}
+.sess-stats{text-align:right;}
+.sess-wpm{font-family:var(--fn);font-size:18px;font-weight:800;color:var(--a);}
+.sess-comp{font-size:11px;color:var(--tm);}
+.empty-history{text-align:center;padding:48px 24px;color:var(--td);}
+.empty-history-icon{font-size:40px;margin-bottom:12px;}
+.empty-history-text{font-size:14px;line-height:1.5;}
+
+/* ── TRANSITIONS ── */
+.screen{animation:fadeIn .2s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── MISC ── */
+.section-title{font-family:var(--fn);font-size:13px;font-weight:700;color:var(--tm);letter-spacing:.5px;margin-bottom:2px;}
+.divider{height:1px;background:var(--border);}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--s3);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--a2);cursor:pointer;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ HOME ══ -->
+<div class="screen active" id="s-home">
+  <div class="home-header">
+    <div class="home-logo">Read<span>Fit</span></div>
+    <div class="streak-pill" id="streak-pill">🔥 <span id="streak-val">0</span> day streak</div>
+  </div>
+
+  <div class="card wpm-card">
+    <div class="label" style="margin-bottom:16px">Your Reading Speed</div>
+    <div class="wpm-ring-wrap">
+      <svg class="wpm-svg" viewBox="0 0 160 160">
+        <circle class="ring-bg" cx="80" cy="80" r="66"/>
+        <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="66" stroke-dasharray="0 414.7"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-wpm" id="ring-wpm">—</div>
+        <div class="ring-label">WPM avg</div>
+      </div>
+    </div>
+    <div class="wpm-level" id="wpm-level">Complete a session to begin</div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-sessions">0</div>
+      <div class="stat-lbl">Sessions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-best">—</div>
+      <div class="stat-lbl">Best WPM</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-comp">—</div>
+      <div class="stat-lbl">Avg Comp.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Choose your workout</div>
+  <div class="mode-cards">
+    <div class="mode-card mc-test" onclick="startFlow('test')">
+      <div class="mode-card-icon">📖</div>
+      <div class="mode-card-text">
+        <div class="mode-card-title">Reading Test</div>
+        <div class="mode-card-desc">Read at your natural pace · Measure your true WPM · Answer a comprehension quiz</div>
+      </div>
+      <div class="mode-card-arrow">›</div>
+    </div>
+    <div class="mode-card mc-rsvp" onclick="startFlow('rsvp')">
+      <div class="mode-card-icon">⚡</div>
+      <div class="mode-card-text">
+        <div class="mode-card-title">RSVP Sprint</div>
+        <div class="mode-card-desc">Words flash one at a time · Train your eyes to keep pace · Push your comfort zone</div>
+      </div>
+      <div class="mode-card-arrow">›</div>
+    </div>
+  </div>
+  <div style="height:4px"></div>
+</div>
+
+<!-- ══ PASSAGE SELECT ══ -->
+<div class="screen flow" id="s-passage" style="gap:14px;">
+  <div class="flow-header">
+    <div class="back-btn" onclick="goHome()">‹</div>
+    <div class="flow-title" id="passage-flow-title">Choose a passage</div>
+    <div class="step-pip">
+      <div class="pip active" id="pip1"></div>
+      <div class="pip" id="pip2"></div>
+      <div class="pip" id="pip3"></div>
+    </div>
+  </div>
+  <div class="label">Select what you want to read</div>
+  <div class="passage-grid" id="passage-grid"></div>
+  <button class="btn btn-primary" id="passage-next-btn" onclick="startSession()" style="display:none">Start Session →</button>
+</div>
+
+<!-- ══ READING TEST ══ -->
+<div class="screen flow" id="s-reading" style="gap:14px;">
+  <div class="flow-header">
+    <div class="back-btn" onclick="showScreen('s-passage')">‹</div>
+    <div class="flow-title" id="reading-title">Reading Test</div>
+    <div class="step-pip">
+      <div class="pip done"></div>
+      <div class="pip active" id="pip-r2"></div>
+      <div class="pip" id="pip-r3"></div>
+    </div>
+  </div>
+  <div class="card" style="text-align:center;padding:16px;">
+    <div class="reading-timer" id="reading-timer">00:00</div>
+    <div class="reading-status" id="reading-status">Tap the passage to start the timer</div>
+  </div>
+  <div class="reading-text" id="reading-text" onclick="handleReadingClick()"></div>
+  <div class="reading-hint" id="reading-hint">Tap the text above to start · Tap again when done</div>
+  <button class="btn btn-primary btn-icon" id="reading-done-btn" onclick="finishReading()" style="display:none">
+    ✓ Done Reading
+  </button>
+</div>
+
+<!-- ══ RSVP ══ -->
+<div class="screen flow" id="s-rsvp" style="gap:0px;">
+  <div style="padding:0 0 12px;display:flex;flex-direction:column;gap:12px;">
+    <div class="flow-header">
+      <div class="back-btn" onclick="showScreen('s-passage');stopRSVP()">‹</div>
+      <div class="flow-title" id="rsvp-title">RSVP Sprint</div>
+      <div class="step-pip">
+        <div class="pip done"></div>
+        <div class="pip active"></div>
+        <div class="pip"></div>
+      </div>
+    </div>
+    <div class="rsvp-controls">
+      <div>
+        <button class="speed-btn" onclick="changeSpeed(-25)">−</button>
+      </div>
+      <div>
+        <div class="rsvp-wpm-display" id="rsvp-wpm-val">250</div>
+        <div class="rsvp-wpm-label">WPM</div>
+      </div>
+      <div>
+        <button class="speed-btn" onclick="changeSpeed(25)">+</button>
+      </div>
+    </div>
+  </div>
+  <div class="rsvp-stage" id="rsvp-stage">
+    <div class="rsvp-ready" id="rsvp-ready">
+      <div style="font-size:48px">⚡</div>
+      <div class="rsvp-ready-title">Ready to sprint?</div>
+      <div class="rsvp-ready-sub">Words will flash one at a time.<br>Set your speed above, then press play.</div>
+      <button class="rsvp-play-btn" onclick="startRSVP()">▶</button>
+    </div>
+    <div id="rsvp-running" style="display:none;flex-direction:column;align-items:center;width:100%;gap:12px;">
+      <div class="rsvp-word" id="rsvp-word">—</div>
+      <div class="rsvp-focal"></div>
+      <div class="rsvp-count" id="rsvp-count">0 / 0</div>
+      <div class="rsvp-progress" style="margin:0 24px;">
+        <div class="rsvp-progress-fill" id="rsvp-progress-fill" style="width:0%"></div>
+      </div>
+      <button class="rsvp-play-btn" id="rsvp-pause-btn" onclick="toggleRSVP()">⏸</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div class="screen flow" id="s-quiz" style="gap:14px;">
+  <div class="flow-header">
+    <div class="back-btn" style="opacity:.3;cursor:default;">‹</div>
+    <div class="flow-title">Comprehension Quiz</div>
+    <div class="step-pip">
+      <div class="pip done"></div>
+      <div class="pip done"></div>
+      <div class="pip active"></div>
+    </div>
+  </div>
+  <div class="quiz-progress">
+    <div class="quiz-progress-fill" id="quiz-prog-fill" style="width:25%"></div>
+  </div>
+  <div class="quiz-num" id="quiz-num">Question 1 of 4</div>
+  <div class="quiz-q" id="quiz-q"></div>
+  <div class="quiz-opts" id="quiz-opts"></div>
+  <div style="height:8px"></div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div class="screen flow" id="s-results" style="gap:14px;">
+  <div class="flow-header">
+    <div class="back-btn" style="opacity:.3;cursor:default;">‹</div>
+    <div class="flow-title">Session Results</div>
+    <div></div>
+  </div>
+  <div class="results-hero">
+    <div class="results-grade" id="results-grade"></div>
+    <div class="results-subtitle" id="results-subtitle"></div>
+  </div>
+  <div class="results-metrics">
+    <div class="metric-card">
+      <div class="metric-val" id="res-wpm" style="color:var(--a)">—</div>
+      <div class="metric-lbl">Words / Min</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val" id="res-comp" style="color:var(--g)">—</div>
+      <div class="metric-lbl">Comprehension</div>
+    </div>
+  </div>
+  <div class="insight-card" id="res-insight"></div>
+  <div class="section-title">Quiz breakdown</div>
+  <div class="answers-list" id="res-answers"></div>
+  <div class="btn-row">
+    <button class="btn btn-ghost" onclick="goHome()">Home</button>
+    <button class="btn btn-primary" onclick="startFlow(currentMode)">Train Again</button>
+  </div>
+  <div style="height:4px"></div>
+</div>
+
+<!-- ══ HISTORY ══ -->
+<div class="screen" id="s-history">
+  <div class="home-logo" style="font-size:18px;">Read<span style="color:var(--a)">Fit</span> · Progress</div>
+  <div class="card chart-card">
+    <div class="label" style="margin-bottom:14px">WPM Over Time</div>
+    <canvas id="wpm-chart" height="160"></canvas>
+  </div>
+  <div id="history-body"></div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav id="nav">
+  <button class="nav-btn active" id="nav-home" onclick="navTo('home')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Home
+  </button>
+  <button class="nav-btn" id="nav-train" onclick="navTo('train')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    Train
+  </button>
+  <button class="nav-btn" id="nav-history" onclick="navTo('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Progress
+  </button>
+</nav>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// ─── PASSAGES ─────────────────────────────────────────────────
+const PASSAGES = {
+  ocean: {
+    id:'ocean', title:'The Deep Ocean', genre:'Non-fiction · Science', icon:'🌊',
+    text:`The deep ocean remains one of Earth's least explored frontiers. Covering more than seventy percent of our planet's surface, the oceans reach depths of nearly eleven kilometers at their lowest point — the Challenger Deep in the Mariana Trench. Despite this immense scale, scientists estimate that less than twenty percent of the world's oceans have been mapped with any meaningful detail.
+
+Life in the deep has evolved extraordinary adaptations to survive under crushing pressure, near-freezing temperatures, and complete darkness. Bioluminescence is common: anglerfish dangle glowing lures to attract prey, while squid use flashing light patterns to communicate. Many organisms have transparent or gelatinous bodies that help them move silently through the water column.
+
+Food sources in the deep are surprisingly varied. Many animals survive on marine snow — tiny particles of dead organic material that drift down from the surface like a slow, silent blizzard. Others cluster around hydrothermal vents, where superheated water rich in minerals supports entire ecosystems powered not by sunlight, but by chemosynthesis.
+
+Modern technology is beginning to unlock these secrets. Remotely operated vehicles and reinforced submersibles allow scientists to film and sample life at depths that would crush an unprotected human in seconds. Each new expedition brings discoveries of species entirely unknown to science, reminding us how much life flourishes beyond the reach of light, in the cold and silent world beneath the waves.`,
+    questions:[
+      {q:"Where is the deepest known point in the ocean?",opts:["The Atlantic Ridge","The Mariana Trench","The Arctic Basin","The Pacific Shelf"],ans:1},
+      {q:"What percentage of the ocean has been mapped in meaningful detail?",opts:["Less than 20%","About 50%","Around 70%","Nearly all of it"],ans:0},
+      {q:"What is 'marine snow'?",opts:["Ice crystals at the surface","Bioluminescent particles from fish","Dead organic material drifting from above","Mineral deposits from vents"],ans:2},
+      {q:"What powers ecosystems near hydrothermal vents?",opts:["Sunlight filtered from above","Electrical currents","Bioluminescence","Chemosynthesis"],ans:3}
+    ]
+  },
+  fiction: {
+    id:'fiction', title:'The Last Train', genre:'Fiction', icon:'🚂',
+    text:`The platform was empty when Clara arrived, which was unusual for a Tuesday evening. The clock above Track Four blinked 11:47 — three minutes to the last train. She set her bag down and listened to the station: distant traffic, the hum of fluorescent lights, nothing else.
+
+She had been rehearsing this conversation for six months. Every possible version, in every possible order. But now, standing beneath the flat white light of Montrose Station, she could not remember a single sentence. Only the image of her mother at breakfast that morning, folding her newspaper into precise thirds as if each crease were a considered statement.
+
+The train arrived with a sound of compressed air and screeching metal. Three passengers stepped off, none of them looking up. Clara picked up her bag.
+
+She had moved to this city for a job she no longer had. She had stayed for a man who no longer called. The apartment she was leaving held furniture chosen for two people and now used by one. There was something clarifying about that — about the geometry of loss.
+
+The doors waited. She stepped on.
+
+Whatever she was going to say to her mother, she would work it out on the journey. The train moved, the platform disappeared behind her, and Clara exhaled for what felt like the first time in months. She looked out the window at the rushing dark, and felt, for no clear reason, something close to relief.`,
+    questions:[
+      {q:"What time did Clara arrive at the platform?",opts:["11:30","11:44","11:47","Midnight"],ans:2},
+      {q:"Why had Clara originally moved to the city?",opts:["To be near family","For a job","To escape a relationship","For university"],ans:1},
+      {q:"How long had Clara been rehearsing the conversation with her mother?",opts:["A few weeks","Three months","Six months","Over a year"],ans:2},
+      {q:"What emotion does Clara feel at the very end of the passage?",opts:["Dread and anxiety","Anger at her mother","Something close to relief","Deep sadness"],ans:2}
+    ]
+  },
+  tech: {
+    id:'tech', title:'The Rise of Quiet Tech', genre:'Technology · News', icon:'📱',
+    text:`For decades, the most celebrated advances in consumer technology were defined by what you could see: larger screens, thinner laptops, more vivid displays. But the most significant innovations of the past several years have been almost entirely invisible.
+
+Modern smartphones now contain dedicated chips for machine learning — processing that would have required a data center just five years ago happens silently in your pocket in milliseconds. Noise-canceling algorithms analyze and reconstruct sound waves thousands of times per second. Navigation apps predict traffic patterns across entire cities before congestion has fully formed.
+
+This shift toward quiet technology — systems that work without requiring conscious user awareness — has profound implications. On one hand, it allows devices to become genuinely useful without demanding attention. A phone that knows when to silence itself during a meeting, or a car that subtly compensates for crosswinds, improves daily life without asking for anything in return.
+
+On the other hand, invisible systems raise invisible questions. When technology acts without prompting, who is responsible for its decisions? How can users maintain meaningful control over systems they cannot see or understand?
+
+Regulators are beginning to respond. The European Union's AI Act, the most comprehensive legislative framework yet attempted, requires that consequential automated systems be explainable to the people they affect. Whether this standard can keep pace with the rate of technological change remains, for now, an open question.`,
+    questions:[
+      {q:"What historically defined major technological advances?",opts:["Invisible software improvements","Visible features like screens and hardware","Battery life gains","Internet speed"],ans:1},
+      {q:"What does 'quiet technology' mean in this context?",opts:["Devices with lower sound output","Systems working without user awareness","Software that runs in sleep mode","Notification-free devices"],ans:1},
+      {q:"What concern does the author raise about invisible systems?",opts:["They use too much energy","They are hard to update","They raise questions about responsibility and control","They require constant connectivity"],ans:2},
+      {q:"What does the EU's AI Act require?",opts:["All AI must be open source","Automated systems must be explainable to those they affect","AI decisions must be reviewed by humans","Devices need manual override switches"],ans:1}
+    ]
+  },
+  memory: {
+    id:'memory', title:'How Memory Works', genre:'Science · Psychology', icon:'🧠',
+    text:`Memory is not a single system but a collection of distinct processes, each handled by different regions of the brain. Understanding this architecture helps explain why certain experiences are recalled vividly for decades while others fade within hours of occurring.
+
+The process begins with encoding — the brain converting sensory input into a form that can be stored. Attention acts as the gatekeeper: information that fails to capture focus is rarely encoded at all. Emotion strengthens encoding considerably; the brain's amygdala marks emotionally significant events as high priority, which is why traumatic or deeply joyful experiences tend to persist long after ordinary moments have been forgotten.
+
+Stored memories are not fixed recordings. Each time a memory is retrieved, it becomes temporarily unstable and is reconsolidated — essentially rewritten, incorporating current context, mood, and recently acquired information. This explains why eyewitness accounts are less reliable than they feel, and why two people who shared the same event can hold genuinely different memories of it.
+
+Working memory — the type used for immediate tasks like mental arithmetic or following a spoken conversation — operates differently. It holds roughly four to seven pieces of information at once and begins to decay within seconds without active rehearsal. Techniques like spaced repetition exploit the way long-term memory consolidates during sleep, making recall faster and more reliable over time.
+
+The practical implication is clear: memory is less about passive storage and more about active reconstruction. What we remember is shaped as much by how and when we revisit it as by the original experience itself.`,
+    questions:[
+      {q:"What role does the amygdala play in memory?",opts:["It manages working memory tasks","It converts sound into storable form","It marks emotionally significant events as high priority","It controls sleep consolidation"],ans:2},
+      {q:"What happens to a memory when it is recalled?",opts:["It becomes permanently stronger","It fades unless immediately reviewed","It becomes temporarily unstable and is reconsolidated","It moves to a different brain region"],ans:2},
+      {q:"How many items can working memory typically hold at once?",opts:["One to three","Four to seven","Ten to fifteen","Unlimited"],ans:1},
+      {q:"According to the passage, what is memory best described as?",opts:["A fixed recording of events","Active reconstruction shaped by how we revisit it","A purely emotional process","A function of sleep alone"],ans:1}
+    ]
+  }
+};
+const PASSAGE_ORDER = ['ocean','fiction','tech','memory'];
+
+// ─── STATE ────────────────────────────────────────────────────
+let currentMode = 'test';
+let selectedPassage = null;
+let readingStartTime = null;
+let readingTimerInterval = null;
+let readingActive = false;
+let rsvpInterval = null;
+let rsvpWordIndex = 0;
+let rsvpPaused = false;
+let rsvpTargetWPM = 250;
+let rsvpWords = [];
+let quizIndex = 0;
+let quizAnswers = [];
+let sessionWPM = 0;
+let sessions = [];
+let wpmChart = null;
+
+// ─── STORAGE ──────────────────────────────────────────────────
+function loadData() {
+  try { const d = localStorage.getItem('readfit-v1'); sessions = d ? JSON.parse(d) : []; }
+  catch { sessions = []; }
+}
+function saveData() {
+  try { localStorage.setItem('readfit-v1', JSON.stringify(sessions)); }
+  catch {}
+}
+function addSession(obj) {
+  sessions.push(obj);
+  sessions = sessions.slice(-50);
+  saveData();
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────
+const SCREENS = ['s-home','s-passage','s-reading','s-rsvp','s-quiz','s-results','s-history'];
+function showScreen(id) {
+  SCREENS.forEach(s => {
+    const el = document.getElementById(s);
+    if (!el) return;
+    el.classList.remove('active');
+    el.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) { target.style.display = 'flex'; target.classList.add('active'); }
+  const isFlow = ['s-passage','s-reading','s-rsvp','s-quiz','s-results'].includes(id);
+  document.getElementById('nav').style.display = isFlow ? 'none' : 'flex';
+}
+
+function navTo(tab) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-'+tab).classList.add('active');
+  if (tab === 'home') { showScreen('s-home'); refreshHome(); }
+  else if (tab === 'train') { startFlow('test'); }
+  else if (tab === 'history') { showScreen('s-history'); renderHistory(); }
+}
+
+function goHome() {
+  stopRSVP(); clearReadingTimer();
+  showScreen('s-home'); refreshHome();
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-home').classList.add('active');
+  document.getElementById('nav').style.display = 'flex';
+}
+
+// ─── HOME ─────────────────────────────────────────────────────
+function refreshHome() {
+  loadData();
+  const el = id => document.getElementById(id);
+
+  if (!sessions.length) {
+    el('ring-wpm').textContent = '—';
+    el('wpm-level').textContent = 'Complete a session to begin';
+    el('ring-fill').setAttribute('stroke-dasharray', '0 414.7');
+    el('stat-sessions').textContent = '0';
+    el('stat-best').textContent = '—';
+    el('stat-comp').textContent = '—';
+  } else {
+    const avgWPM = Math.round(sessions.reduce((s,x) => s+x.wpm, 0) / sessions.length);
+    const bestWPM = Math.max(...sessions.map(x => x.wpm));
+    const avgComp = Math.round(sessions.reduce((s,x) => s+x.comp, 0) / sessions.length);
+    const pct = Math.min(avgWPM / 500, 1);
+    const dash = pct * 414.7;
+
+    el('ring-wpm').textContent = avgWPM;
+    el('ring-fill').setAttribute('stroke-dasharray', `${dash} 414.7`);
+    el('wpm-level').textContent = wpmLevel(avgWPM);
+    el('stat-sessions').textContent = sessions.length;
+    el('stat-best').textContent = bestWPM;
+    el('stat-comp').textContent = avgComp + '%';
+  }
+
+  // Streak
+  const streak = calcStreak();
+  el('streak-val').textContent = streak;
+}
+
+function wpmLevel(wpm) {
+  if (wpm < 150) return '📖 Developing reader';
+  if (wpm < 238) return '📚 Average reader';
+  if (wpm < 350) return '⚡ Above average';
+  if (wpm < 500) return '🚀 Fast reader';
+  return '🏆 Speed reader';
+}
+
+function calcStreak() {
+  if (!sessions.length) return 0;
+  const dates = [...new Set(sessions.map(s => s.date))].sort().reverse();
+  const today = new Date().toLocaleDateString('en-CA');
+  const yesterday = new Date(Date.now()-86400000).toLocaleDateString('en-CA');
+  if (dates[0] !== today && dates[0] !== yesterday) return 0;
+  let streak = 1;
+  for (let i = 1; i < dates.length; i++) {
+    const prev = new Date(dates[i-1]);
+    const curr = new Date(dates[i]);
+    const diff = (prev - curr) / 86400000;
+    if (Math.round(diff) === 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ─── FLOW ─────────────────────────────────────────────────────
+function startFlow(mode) {
+  currentMode = mode;
+  selectedPassage = null;
+  document.getElementById('passage-flow-title').textContent =
+    mode === 'test' ? '📖 Reading Test' : '⚡ RSVP Sprint';
+  renderPassageGrid();
+  document.getElementById('passage-next-btn').style.display = 'none';
+  showScreen('s-passage');
+}
+
+function renderPassageGrid() {
+  const grid = document.getElementById('passage-grid');
+  grid.innerHTML = PASSAGE_ORDER.map(pid => {
+    const p = PASSAGES[pid];
+    const wc = p.text.split(/\s+/).filter(w=>w).length;
+    return `<div class="passage-card" id="pc-${pid}" onclick="selectPassage('${pid}')">
+      <div class="p-icon">${p.icon}</div>
+      <div class="p-meta">
+        <div class="p-title">${p.title}</div>
+        <div class="p-genre">${p.genre}</div>
+        <div class="p-words">${wc} words · ~${Math.round(wc/238)} min read</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selectPassage(pid) {
+  selectedPassage = pid;
+  document.querySelectorAll('.passage-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('pc-'+pid).classList.add('selected');
+  document.getElementById('passage-next-btn').style.display = 'block';
+}
+
+function startSession() {
+  if (!selectedPassage) return;
+  if (currentMode === 'test') startReadingTest();
+  else startRSVPSession();
+}
+
+// ─── READING TEST ──────────────────────────────────────────────
+function startReadingTest() {
+  const p = PASSAGES[selectedPassage];
+  document.getElementById('reading-title').textContent = p.title;
+  document.getElementById('reading-text').textContent = p.text;
+  document.getElementById('reading-timer').textContent = '00:00';
+  document.getElementById('reading-status').textContent = 'Tap the passage to start the timer';
+  document.getElementById('reading-hint').style.display = 'block';
+  document.getElementById('reading-done-btn').style.display = 'none';
+  readingActive = false;
+  readingStartTime = null;
+  clearReadingTimer();
+  showScreen('s-reading');
+}
+
+function handleReadingClick() {
+  if (!readingActive) {
+    readingActive = true;
+    readingStartTime = Date.now();
+    document.getElementById('reading-status').textContent = 'Reading... tap "Done" when finished';
+    document.getElementById('reading-hint').style.display = 'none';
+    document.getElementById('reading-done-btn').style.display = 'block';
+    readingTimerInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - readingStartTime) / 1000);
+      const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+      const s = String(elapsed%60).padStart(2,'0');
+      document.getElementById('reading-timer').textContent = m+':'+s;
+    }, 1000);
+  }
+}
+
+function finishReading() {
+  if (!readingActive || !readingStartTime) return;
+  clearReadingTimer();
+  const elapsed = (Date.now() - readingStartTime) / 1000;
+  const p = PASSAGES[selectedPassage];
+  const wc = p.text.split(/\s+/).filter(w=>w).length;
+  sessionWPM = Math.round(wc / (elapsed / 60));
+  startQuiz();
+}
+
+function clearReadingTimer() {
+  if (readingTimerInterval) { clearInterval(readingTimerInterval); readingTimerInterval = null; }
+  readingActive = false;
+}
+
+// ─── RSVP ─────────────────────────────────────────────────────
+function startRSVPSession() {
+  const p = PASSAGES[selectedPassage];
+  rsvpWords = p.text.split(/\s+/).filter(w=>w);
+  rsvpWordIndex = 0;
+  rsvpPaused = false;
+  document.getElementById('rsvp-title').textContent = p.title;
+  document.getElementById('rsvp-wpm-val').textContent = rsvpTargetWPM;
+  document.getElementById('rsvp-ready').style.display = 'flex';
+  document.getElementById('rsvp-running').style.display = 'none';
+  document.getElementById('rsvp-word').textContent = '—';
+  document.getElementById('rsvp-progress-fill').style.width = '0%';
+  document.getElementById('rsvp-count').textContent = `0 / ${rsvpWords.length}`;
+  showScreen('s-rsvp');
+}
+
+function startRSVP() {
+  stopRSVP();
+  rsvpWordIndex = 0;
+  rsvpPaused = false;
+  document.getElementById('rsvp-ready').style.display = 'none';
+  document.getElementById('rsvp-running').style.display = 'flex';
+  document.getElementById('rsvp-pause-btn').textContent = '⏸';
+  const delay = Math.round(60000 / rsvpTargetWPM);
+  rsvpInterval = setInterval(() => {
+    if (rsvpPaused) return;
+    if (rsvpWordIndex >= rsvpWords.length) {
+      stopRSVP();
+      sessionWPM = rsvpTargetWPM;
+      startQuiz();
+      return;
+    }
+    document.getElementById('rsvp-word').textContent = rsvpWords[rsvpWordIndex];
+    const pct = ((rsvpWordIndex+1)/rsvpWords.length*100).toFixed(1);
+    document.getElementById('rsvp-progress-fill').style.width = pct+'%';
+    document.getElementById('rsvp-count').textContent = `${rsvpWordIndex+1} / ${rsvpWords.length}`;
+    rsvpWordIndex++;
+  }, delay);
+}
+
+function stopRSVP() {
+  if (rsvpInterval) { clearInterval(rsvpInterval); rsvpInterval = null; }
+}
+
+function toggleRSVP() {
+  rsvpPaused = !rsvpPaused;
+  document.getElementById('rsvp-pause-btn').textContent = rsvpPaused ? '▶' : '⏸';
+}
+
+function changeSpeed(delta) {
+  rsvpTargetWPM = Math.max(50, Math.min(800, rsvpTargetWPM + delta));
+  document.getElementById('rsvp-wpm-val').textContent = rsvpTargetWPM;
+  if (rsvpInterval) {
+    // restart at new speed without resetting position
+    stopRSVP();
+    const delay = Math.round(60000 / rsvpTargetWPM);
+    rsvpInterval = setInterval(() => {
+      if (rsvpPaused) return;
+      if (rsvpWordIndex >= rsvpWords.length) {
+        stopRSVP(); sessionWPM = rsvpTargetWPM; startQuiz(); return;
+      }
+      document.getElementById('rsvp-word').textContent = rsvpWords[rsvpWordIndex];
+      const pct = ((rsvpWordIndex+1)/rsvpWords.length*100).toFixed(1);
+      document.getElementById('rsvp-progress-fill').style.width = pct+'%';
+      document.getElementById('rsvp-count').textContent = `${rsvpWordIndex+1} / ${rsvpWords.length}`;
+      rsvpWordIndex++;
+    }, delay);
+  }
+}
+
+// ─── QUIZ ─────────────────────────────────────────────────────
+function startQuiz() {
+  quizIndex = 0;
+  quizAnswers = [];
+  showScreen('s-quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const p = PASSAGES[selectedPassage];
+  const q = p.questions[quizIndex];
+  document.getElementById('quiz-num').textContent = `Question ${quizIndex+1} of ${p.questions.length}`;
+  document.getElementById('quiz-q').textContent = q.q;
+  document.getElementById('quiz-prog-fill').style.width = `${((quizIndex)/p.questions.length)*100}%`;
+  const opts = document.getElementById('quiz-opts');
+  opts.innerHTML = q.opts.map((o,i) =>
+    `<button class="quiz-opt" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</button>`
+  ).join('');
+}
+
+function answerQuiz(idx) {
+  const p = PASSAGES[selectedPassage];
+  const q = p.questions[quizIndex];
+  quizAnswers.push({selected:idx, correct:q.ans, question:q.q, options:q.opts});
+  const btns = document.querySelectorAll('.quiz-opt');
+  btns.forEach((b,i) => {
+    b.classList.add('answered');
+    if (i === q.ans) b.classList.add('correct');
+    else if (i === idx && idx !== q.ans) b.classList.add('wrong');
+  });
+  setTimeout(() => {
+    quizIndex++;
+    if (quizIndex >= p.questions.length) showResults();
+    else renderQuestion();
+  }, 700);
+}
+
+// ─── RESULTS ──────────────────────────────────────────────────
+function showResults() {
+  const correct = quizAnswers.filter(a => a.selected === a.correct).length;
+  const comp = Math.round((correct / quizAnswers.length) * 100);
+  const p = PASSAGES[selectedPassage];
+
+  // Save session
+  const sess = {
+    wpm: sessionWPM,
+    comp,
+    mode: currentMode,
+    passage: p.title,
+    passageId: selectedPassage,
+    date: new Date().toLocaleDateString('en-CA'),
+    timestamp: Date.now()
+  };
+  addSession(sess);
+
+  // Grade
+  const combined = Math.round((Math.min(sessionWPM/400,1)*50) + (comp/100*50));
+  let grade, color;
+  if (combined >= 85) { grade = '🏆'; color = 'var(--g)'; }
+  else if (combined >= 70) { grade = '⚡'; color = 'var(--a)'; }
+  else if (combined >= 50) { grade = '📖'; color = 'var(--y)'; }
+  else { grade = '🌱'; color = 'var(--r)'; }
+
+  document.getElementById('results-grade').textContent = grade;
+  document.getElementById('results-grade').style.fontSize = '80px';
+  document.getElementById('results-subtitle').textContent = resultSubtitle(sessionWPM, comp);
+  document.getElementById('res-wpm').textContent = sessionWPM;
+  document.getElementById('res-comp').textContent = comp+'%';
+
+  // Insight
+  document.getElementById('res-insight').innerHTML =
+    `<div class="insight-text">${buildInsight(sessionWPM, comp, currentMode)}</div>`;
+
+  // Answers breakdown
+  document.getElementById('res-answers').innerHTML = quizAnswers.map((a,i) => {
+    const ok = a.selected === a.correct;
+    return `<div class="ans-item ${ok?'ok':'bad'}">
+      <div class="ans-icon">${ok?'✓':'✗'}</div>
+      <div class="ans-text">
+        ${a.question}
+        ${!ok ? `<div class="ans-correct">Correct: ${a.options[a.correct]}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  showScreen('s-results');
+}
+
+function resultSubtitle(wpm, comp) {
+  const avg = 238;
+  const diff = wpm - avg;
+  if (diff > 0) return `${diff} WPM above average · ${comp}% comprehension`;
+  if (diff < 0) return `${Math.abs(diff)} WPM below average · ${comp}% comprehension`;
+  return `Right at the average reading speed · ${comp}% comprehension`;
+}
+
+function buildInsight(wpm, comp, mode) {
+  const parts = [];
+  if (wpm < 150) parts.push("Your pace is developing — that's totally normal for someone starting out. Consistency matters more than speed right now.");
+  else if (wpm < 238) parts.push("You're reading just below the adult average of 238 WPM. With regular practice, you'll cross that threshold quickly.");
+  else if (wpm < 400) parts.push(`At ${wpm} WPM you're already above average. You're reading ${wpm - 238} words per minute faster than most adults.`);
+  else parts.push(`${wpm} WPM is genuinely fast. At this pace you could read a 300-page book in about ${Math.round(300*250/wpm)} hours.`);
+
+  if (comp < 50) parts.push("Comprehension is low — try slowing down. Speed without understanding isn't reading.");
+  else if (comp < 75) parts.push("Comprehension is decent. Try to stay focused and reduce re-reading habits to improve both speed and retention.");
+  else if (comp < 100) parts.push("Strong comprehension! You're reading efficiently.");
+  else parts.push("Perfect comprehension. Your speed and understanding are both working together — great session.");
+
+  if (mode === 'rsvp') parts.push("Tip: RSVP trains your brain to keep pace. Switch to Reading Test occasionally to check how it transfers to natural reading.");
+  return parts.join(' ');
+}
+
+// ─── HISTORY ──────────────────────────────────────────────────
+function renderHistory() {
+  loadData();
+  const body = document.getElementById('history-body');
+
+  if (!sessions.length) {
+    body.innerHTML = `<div class="empty-history">
+      <div class="empty-history-icon">📊</div>
+      <div class="empty-history-text">No sessions yet.<br>Complete your first training to see progress here.</div>
+    </div>`;
+    if (wpmChart) { wpmChart.destroy(); wpmChart = null; }
+    document.getElementById('wpm-chart').getContext('2d').clearRect(0,0,9999,9999);
+    return;
+  }
+
+  // Chart
+  const last10 = sessions.slice(-10);
+  const labels = last10.map((_,i) => `#${sessions.length - last10.length + i + 1}`);
+  const wpmData = last10.map(s => s.wpm);
+  const compData = last10.map(s => s.comp);
+
+  if (wpmChart) wpmChart.destroy();
+  const ctx = document.getElementById('wpm-chart').getContext('2d');
+  wpmChart = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {label:'WPM',data:wpmData,borderColor:'#818cf8',backgroundColor:'rgba(129,140,248,0.1)',tension:.4,pointRadius:4,pointBackgroundColor:'#818cf8',yAxisID:'wpm'},
+        {label:'Comp %',data:compData,borderColor:'#34d399',backgroundColor:'rgba(52,211,153,0.08)',tension:.4,pointRadius:4,pointBackgroundColor:'#34d399',yAxisID:'comp'}
+      ]
+    },
+    options:{
+      responsive:true,animation:{duration:600},
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:11,family:'DM Sans'}}}},
+      scales:{
+        x:{ticks:{color:'#5a5a80',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
+        wpm:{position:'left',ticks:{color:'#818cf8',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
+        comp:{position:'right',ticks:{color:'#34d399',font:{size:10},callback:v=>v+'%'},grid:{display:false},min:0,max:100}
+      }
+    }
+  });
+
+  // Session list
+  body.innerHTML = `<div class="section-title" style="margin-bottom:8px">Recent sessions</div>
+    <div class="sessions-list">
+    ${[...sessions].reverse().map(s => `
+    <div class="sess-card">
+      <div class="sess-mode" style="background:${s.mode==='test'?'var(--a-dim)':'var(--g-dim)'}">
+        ${s.mode==='test'?'📖':'⚡'}
+      </div>
+      <div class="sess-info">
+        <div class="sess-title">${s.passage}</div>
+        <div class="sess-date">${s.date} · ${s.mode === 'test' ? 'Reading Test' : 'RSVP Sprint'}</div>
+      </div>
+      <div class="sess-stats">
+        <div class="sess-wpm">${s.wpm}</div>
+        <div class="sess-comp">${s.comp}% comp</div>
+      </div>
+    </div>`).join('')}
+    </div>`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+loadData();
+refreshHome();
+showScreen('s-home');
+</script>
+</body>
+</html>
