@@ -2,17 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>ReadFit — Speed Reading Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#080810;
-  --s1:#10101e;
-  --s2:#18182e;
-  --s3:#20203a;
+  --bg:#080810;--s1:#10101e;--s2:#18182e;--s3:#20203a;
   --border:rgba(150,140,255,0.10);
   --a:#a5b4fc;--a2:#818cf8;--a-dim:rgba(165,180,252,0.12);
   --g:#34d399;--g-dim:rgba(52,211,153,0.14);
@@ -25,410 +22,501 @@
 html,body{height:100%;background:var(--bg);font-family:var(--fb);color:var(--t);overflow:hidden;}
 #app{height:100vh;display:flex;flex-direction:column;max-width:520px;margin:0 auto;position:relative;}
 
-/* ── SCREENS ── */
-.screen{position:absolute;inset:0;bottom:64px;overflow-y:auto;padding:20px 20px 12px;display:none;flex-direction:column;gap:16px;scrollbar-width:none;}
+.screen{position:absolute;inset:0;bottom:64px;overflow-y:auto;padding:20px 20px 16px;display:none;flex-direction:column;gap:14px;scrollbar-width:none;}
 .screen::-webkit-scrollbar{display:none;}
-.screen.active{display:flex;}
-.screen.flow{bottom:0;padding-bottom:20px;}
+.screen.active{display:flex;animation:fadeUp .22s ease;}
+.screen.flow{bottom:0;padding-bottom:24px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 
-/* ── BOTTOM NAV ── */
+/* NAV */
 #nav{position:absolute;bottom:0;left:0;right:0;height:64px;background:var(--s1);border-top:1px solid var(--border);display:flex;z-index:100;}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:none;border:none;color:var(--td);cursor:pointer;font-family:var(--fb);font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;}
-.nav-btn svg{width:20px;height:20px;transition:transform .2s;}
-.nav-btn.active{color:var(--a);}
-.nav-btn.active svg{transform:scale(1.1);}
-.nav-btn:hover{color:var(--tm);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--td);cursor:pointer;font-family:var(--fb);font-size:10px;font-weight:500;letter-spacing:.5px;text-transform:uppercase;transition:color .2s;}
+.nav-btn svg{width:20px;height:20px;}
+.nav-btn.on{color:var(--a);}
 
-/* ── TYPOGRAPHY ── */
-h1,h2,h3{font-family:var(--fn);}
+/* TYPOGRAPHY */
+h1,h2,.fn{font-family:var(--fn);}
 .label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--td);font-weight:600;}
-.title{font-size:28px;font-weight:800;line-height:1.1;}
-.hero-num{font-family:var(--fn);font-size:64px;font-weight:800;line-height:1;color:var(--t);}
-.hero-unit{font-family:var(--fn);font-size:16px;font-weight:600;color:var(--tm);margin-left:4px;}
 
-/* ── CARDS ── */
+/* CARDS */
 .card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:20px;}
 .card-sm{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:14px 16px;}
-.card-row{display:flex;gap:10px;}
-.card-row .card-sm{flex:1;text-align:center;}
 
-/* ── BUTTONS ── */
-.btn{display:block;width:100%;padding:16px;border:none;border-radius:var(--rad-sm);font-family:var(--fn);font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .2s;text-align:center;}
-.btn-primary{background:var(--a2);color:#080810;}
-.btn-primary:hover{background:var(--a);transform:translateY(-1px);}
-.btn-ghost{background:var(--s2);color:var(--t);border:1px solid var(--border);}
-.btn-ghost:hover{border-color:var(--a);color:var(--a);}
-.btn-sm{padding:10px 20px;font-size:12px;width:auto;display:inline-block;}
-.btn-icon{display:flex;align-items:center;justify-content:center;gap:8px;}
+/* BUTTONS */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:var(--rad-sm);font-family:var(--fn);font-size:14px;font-weight:700;letter-spacing:.3px;cursor:pointer;transition:all .2s;text-align:center;}
+.btn-p{background:var(--a2);color:#080810;}
+.btn-p:hover{background:var(--a);transform:translateY(-1px);}
+.btn-g{background:var(--s2);color:var(--t);border:1px solid var(--border);}
+.btn-g:hover{border-color:var(--a);color:var(--a);}
 .btn-row{display:flex;gap:10px;}
 .btn-row .btn{flex:1;}
 .btn-danger{background:var(--r-dim);color:var(--r);border:1px solid rgba(248,113,113,0.2);}
-
-/* ── BADGES ── */
-.badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.5px;}
-.badge-accent{background:var(--a-dim);color:var(--a);}
-.badge-green{background:var(--g-dim);color:var(--g);}
-.badge-yellow{background:var(--y-dim);color:var(--y);}
-.badge-red{background:var(--r-dim);color:var(--r);}
-
-/* ── HOME SCREEN ── */
-#s-home{}
-.home-header{display:flex;align-items:center;justify-content:space-between;}
-.home-logo{font-family:var(--fn);font-size:22px;font-weight:800;letter-spacing:-1px;color:var(--t);}
-.home-logo span{color:var(--a);}
-.streak-pill{display:flex;align-items:center;gap:6px;background:var(--y-dim);border:1px solid rgba(251,191,36,.2);border-radius:20px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--y);}
-
-.wpm-card{text-align:center;padding:28px 20px;position:relative;overflow:hidden;}
-.wpm-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 110%, rgba(129,140,248,0.08) 0%, transparent 70%);}
-.wpm-ring-wrap{position:relative;width:160px;height:160px;margin:0 auto 16px;}
-.wpm-svg{width:160px;height:160px;transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:var(--s3);stroke-width:8;}
-.ring-fill{fill:none;stroke:var(--a2);stroke-width:8;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
-.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.ring-wpm{font-family:var(--fn);font-size:38px;font-weight:800;line-height:1;}
-.ring-label{font-size:10px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-top:4px;}
-.wpm-level{font-size:13px;color:var(--tm);margin-top:4px;}
-
-.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.stat-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:14px;text-align:center;}
-.stat-num{font-family:var(--fn);font-size:22px;font-weight:800;color:var(--t);}
-.stat-lbl{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
-
-.mode-cards{display:flex;flex-direction:column;gap:10px;}
-.mode-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:18px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
-.mode-card:hover{border-color:var(--a);background:var(--s2);transform:translateY(-1px);}
-.mode-card-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.mc-test .mode-card-icon{background:var(--a-dim);}
-.mc-rsvp .mode-card-icon{background:var(--g-dim);}
-.mode-card-text{flex:1;}
-.mode-card-title{font-family:var(--fn);font-size:16px;font-weight:700;margin-bottom:3px;}
-.mode-card-desc{font-size:12px;color:var(--tm);line-height:1.4;}
-.mode-card-arrow{color:var(--td);font-size:18px;}
-
-/* ── TRAIN FLOW HEADER ── */
-.flow-header{display:flex;align-items:center;gap:12px;flex-shrink:0;}
-.back-btn{width:36px;height:36px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tm);transition:all .2s;flex-shrink:0;}
+.back-btn{width:36px;height:36px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tm);transition:all .2s;flex-shrink:0;font-size:18px;}
 .back-btn:hover{color:var(--t);border-color:var(--a);}
+
+/* FLOW HEADER */
+.flow-hdr{display:flex;align-items:center;gap:12px;flex-shrink:0;}
 .flow-title{font-family:var(--fn);font-size:16px;font-weight:700;flex:1;}
-.step-pip{display:flex;gap:5px;align-items:center;}
+.pips{display:flex;gap:5px;align-items:center;}
 .pip{width:6px;height:6px;border-radius:3px;background:var(--s3);transition:all .3s;}
-.pip.done{background:var(--g);width:16px;}
-.pip.active{background:var(--a);}
+.pip.done{background:var(--g);width:14px;}
+.pip.on{background:var(--a);}
+
+/* ── SETUP ── */
+#s-setup{bottom:0;background:var(--bg);align-items:center;justify-content:center;text-align:center;}
+.setup-wrap{width:100%;max-width:340px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.setup-logo{font-family:var(--fn);font-size:28px;font-weight:800;}
+.setup-logo span{color:var(--a);}
+.setup-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:24px;width:100%;text-align:left;display:flex;flex-direction:column;gap:14px;}
+.setup-head{font-family:var(--fn);font-size:18px;font-weight:700;}
+.setup-sub{font-size:13px;color:var(--tm);line-height:1.6;}
+.inp-wrap{display:flex;flex-direction:column;gap:6px;}
+.inp-lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--td);}
+.inp{width:100%;padding:11px 14px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--rad-sm);color:var(--t);font-size:13px;outline:none;font-family:var(--fb);transition:border .2s;}
+.inp:focus{border-color:var(--a);}
+.inp-err{font-size:12px;color:var(--r);min-height:16px;}
+.setup-link{font-size:12px;color:var(--a);text-decoration:none;}
+.setup-link:hover{color:var(--t);}
+.setup-skip{font-size:12px;color:var(--td);cursor:pointer;margin-top:4px;}
+.setup-skip:hover{color:var(--tm);}
+
+/* ── HOME ── */
+.home-hdr{display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:var(--fn);font-size:22px;font-weight:800;letter-spacing:-1px;}
+.logo span{color:var(--a);}
+.icon-btn{width:36px;height:36px;border-radius:10px;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--tm);font-size:16px;transition:all .2s;}
+.icon-btn:hover{color:var(--t);border-color:var(--a);}
+.streak-pill{display:flex;align-items:center;gap:6px;background:var(--y-dim);border:1px solid rgba(251,191,36,.2);border-radius:20px;padding:5px 13px;font-size:13px;font-weight:600;color:var(--y);}
+.wpm-card{text-align:center;padding:24px 20px;position:relative;overflow:hidden;}
+.wpm-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 110%,rgba(129,140,248,.08) 0%,transparent 70%);}
+.ring-wrap{position:relative;width:150px;height:150px;margin:0 auto 14px;}
+.ring-svg{width:150px;height:150px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--s3);stroke-width:8;}
+.ring-f{fill:none;stroke:var(--a2);stroke-width:8;stroke-linecap:round;transition:stroke-dasharray 1s ease;}
+.ring-ctr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-family:var(--fn);font-size:36px;font-weight:800;line-height:1;}
+.ring-lbl{font-size:10px;letter-spacing:2px;color:var(--tm);text-transform:uppercase;margin-top:3px;}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:13px;text-align:center;}
+.stat-n{font-family:var(--fn);font-size:20px;font-weight:800;}
+.stat-l{font-size:10px;color:var(--td);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.mode-cards{display:flex;flex-direction:column;gap:10px;}
+.mc{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s;}
+.mc:hover{border-color:var(--a);background:var(--s2);transform:translateY(-1px);}
+.mc-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.mc-test .mc-icon{background:var(--a-dim);}
+.mc-rsvp .mc-icon{background:var(--g-dim);}
+.mc-body{flex:1;}
+.mc-title{font-family:var(--fn);font-size:15px;font-weight:700;margin-bottom:3px;}
+.mc-desc{font-size:12px;color:var(--tm);line-height:1.4;}
+.mc-arr{color:var(--td);font-size:18px;}
+
+/* ── SETTINGS ── */
+.settings-section{display:flex;flex-direction:column;gap:10px;}
+.settings-item{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:16px;}
+.settings-item-title{font-family:var(--fn);font-size:14px;font-weight:600;margin-bottom:4px;}
+.settings-item-desc{font-size:12px;color:var(--tm);line-height:1.5;margin-bottom:12px;}
+.key-preview{font-family:monospace;font-size:13px;color:var(--a);background:var(--a-dim);padding:6px 10px;border-radius:6px;margin-bottom:10px;word-break:break-all;}
+
+/* ── UPLOAD ── */
+.upload-tabs{display:flex;background:var(--s2);border-radius:10px;padding:3px;gap:3px;}
+.utab{flex:1;padding:8px;text-align:center;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;font-family:var(--fn);color:var(--td);transition:all .2s;border:none;background:none;}
+.utab.on{background:var(--s1);color:var(--t);box-shadow:0 1px 4px rgba(0,0,0,.3);}
+.paste-area{width:100%;min-height:160px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--rad-sm);color:var(--t);font-size:14px;line-height:1.6;padding:14px;outline:none;font-family:var(--fb);resize:vertical;}
+.paste-area:focus{border-color:var(--a);}
+.file-zone{border:2px dashed var(--border);border-radius:var(--rad-sm);padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.file-zone:hover{border-color:var(--a);background:var(--a-dim);}
+.file-zone-icon{font-size:36px;}
+.file-zone-title{font-family:var(--fn);font-size:15px;font-weight:600;}
+.file-zone-sub{font-size:12px;color:var(--tm);}
+.file-types{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.file-type{font-size:11px;background:var(--s3);padding:3px 9px;border-radius:12px;color:var(--tm);}
+.text-preview{background:var(--s2);border:1px solid var(--border);border-radius:var(--rad-sm);padding:14px;display:flex;flex-direction:column;gap:10px;}
+.text-preview-stat{font-size:12px;color:var(--tm);}
+.text-preview-stat strong{color:var(--t);}
+.text-preview-body{font-size:13px;color:var(--td);line-height:1.6;max-height:80px;overflow:hidden;position:relative;}
+.text-preview-body::after{content:'';position:absolute;bottom:0;left:0;right:0;height:30px;background:linear-gradient(transparent,var(--s2));}
 
 /* ── PASSAGE SELECT ── */
 .passage-grid{display:flex;flex-direction:column;gap:10px;}
-.passage-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:18px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:16px;}
-.passage-card:hover{border-color:var(--a);background:var(--s2);}
-.passage-card.selected{border-color:var(--a);background:var(--a-dim);}
-.p-icon{width:44px;height:44px;border-radius:12px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.p-meta{flex:1;}
-.p-title{font-family:var(--fn);font-size:15px;font-weight:700;margin-bottom:3px;}
+.p-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:16px 18px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:14px;}
+.p-card:hover{border-color:var(--a);background:var(--s2);}
+.p-card.sel{border-color:var(--a);background:var(--a-dim);}
+.p-icon{width:42px;height:42px;border-radius:12px;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.p-title{font-family:var(--fn);font-size:14px;font-weight:700;margin-bottom:2px;}
 .p-genre{font-size:11px;color:var(--tm);}
-.p-words{font-size:11px;color:var(--td);margin-top:4px;}
+.p-wc{font-size:11px;color:var(--td);margin-top:3px;}
+.p-custom{border-color:rgba(52,211,153,.2);background:var(--g-dim);}
+.p-custom .p-icon{background:rgba(52,211,153,.15);}
+.p-add{border:2px dashed var(--border);background:transparent;}
+.p-add:hover{border-color:var(--a);}
 
-/* ── READING SCREEN ── */
-#s-reading{}
-.reading-timer{font-family:var(--fn);font-size:48px;font-weight:800;text-align:center;color:var(--a);letter-spacing:-2px;}
-.reading-status{text-align:center;font-size:13px;color:var(--tm);margin-top:4px;}
-.reading-text{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:24px;font-size:16px;line-height:1.8;color:var(--t);font-weight:400;white-space:pre-wrap;}
+/* ── READING ── */
+.timer-card{text-align:center;padding:14px;background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);}
+.timer{font-family:var(--fn);font-size:44px;font-weight:800;color:var(--a);letter-spacing:-2px;line-height:1;}
+.timer-sub{font-size:12px;color:var(--tm);margin-top:4px;}
+.reading-body{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:22px;font-size:16px;line-height:1.85;color:var(--t);white-space:pre-wrap;cursor:pointer;}
 .reading-hint{font-size:12px;color:var(--td);text-align:center;}
 
 /* ── RSVP ── */
-#s-rsvp{background:var(--bg);}
-.rsvp-controls{display:flex;align-items:center;justify-content:center;gap:16px;}
-.rsvp-wpm-display{font-family:var(--fn);font-size:22px;font-weight:800;color:var(--t);min-width:80px;text-align:center;}
-.rsvp-wpm-label{font-size:10px;color:var(--tm);letter-spacing:1px;text-align:center;margin-top:2px;}
-.speed-btn{width:40px;height:40px;border-radius:12px;background:var(--s2);border:1px solid var(--border);color:var(--tm);font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--fn);font-weight:700;}
+.rsvp-ctrl{display:flex;align-items:center;justify-content:center;gap:18px;padding:4px 0;}
+.speed-btn{width:42px;height:42px;border-radius:12px;background:var(--s2);border:1px solid var(--border);color:var(--tm);font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;font-family:var(--fn);font-weight:700;}
 .speed-btn:hover{color:var(--t);border-color:var(--a);}
+.rsvp-wpm-num{font-family:var(--fn);font-size:24px;font-weight:800;min-width:80px;text-align:center;}
+.rsvp-wpm-lbl{font-size:10px;color:var(--tm);letter-spacing:1px;text-align:center;}
+.rsvp-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.rsvp-ready{text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;}
+.rsvp-ready-icon{font-size:48px;}
+.rsvp-ready-h{font-family:var(--fn);font-size:20px;font-weight:700;}
+.rsvp-ready-s{font-size:13px;color:var(--tm);line-height:1.5;}
+.rsvp-running{display:none;flex-direction:column;align-items:center;width:100%;gap:14px;}
+/* FIXED: dynamic font size set via JS; base CSS provides fallback + overflow protection */
+.rsvp-word{font-family:var(--fn);font-weight:800;color:var(--t);line-height:1.1;text-align:center;letter-spacing:-1px;word-break:break-word;overflow-wrap:anywhere;max-width:95%;min-height:70px;display:flex;align-items:center;justify-content:center;transition:font-size .05s;}
+.rsvp-focal{width:2px;height:20px;background:var(--r);border-radius:1px;opacity:.5;margin-top:-10px;}
+.rsvp-count{font-family:var(--fn);font-size:13px;color:var(--td);}
+.rsvp-bar{width:calc(100% - 40px);height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.rsvp-bar-f{height:100%;background:linear-gradient(90deg,var(--a2),var(--g));border-radius:2px;transition:width .1s linear;}
+.play-btn{width:60px;height:60px;border-radius:50%;border:none;background:var(--a2);color:#080810;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.play-btn:hover{background:var(--a);transform:scale(1.05);}
 
-.rsvp-stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
-.rsvp-word-wrap{position:relative;text-align:center;padding:20px 0;}
-.rsvp-focal{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:2px;height:24px;background:var(--r);border-radius:1px;opacity:0.6;}
-.rsvp-word{font-family:var(--fn);font-size:54px;font-weight:800;color:var(--t);letter-spacing:-1px;line-height:1;transition:opacity 0.05s;min-height:70px;display:flex;align-items:center;justify-content:center;min-width:300px;}
-.rsvp-count{font-size:13px;color:var(--td);margin-top:16px;font-family:var(--fn);}
-.rsvp-progress{width:100%;height:4px;background:var(--s3);border-radius:2px;overflow:hidden;margin-bottom:16px;}
-.rsvp-progress-fill{height:100%;background:linear-gradient(90deg,var(--a2),var(--g));border-radius:2px;transition:width .1s linear;}
-.rsvp-play-btn{width:64px;height:64px;border-radius:50%;border:none;background:var(--a2);color:#080810;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;margin:0 auto;}
-.rsvp-play-btn:hover{background:var(--a);transform:scale(1.05);}
-.rsvp-ready{text-align:center;padding:24px;display:flex;flex-direction:column;gap:16px;align-items:center;}
-.rsvp-ready-title{font-family:var(--fn);font-size:20px;font-weight:700;}
-.rsvp-ready-sub{font-size:14px;color:var(--tm);}
+/* ── GENERATING ── */
+#s-gen{bottom:0;background:var(--bg);align-items:center;justify-content:center;text-align:center;gap:20px;}
+.gen-spinner{width:56px;height:56px;border:3px solid var(--s3);border-top-color:var(--a);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.gen-title{font-family:var(--fn);font-size:22px;font-weight:700;}
+.gen-sub{font-size:13px;color:var(--tm);line-height:1.6;max-width:280px;}
+.gen-dots{display:flex;gap:6px;justify-content:center;}
+.gen-dot{width:6px;height:6px;border-radius:50%;background:var(--a-dim);}
+.gen-dot:nth-child(1){animation:pulse 1.2s .0s infinite;}
+.gen-dot:nth-child(2){animation:pulse 1.2s .2s infinite;}
+.gen-dot:nth-child(3){animation:pulse 1.2s .4s infinite;}
+@keyframes pulse{0%,100%{background:var(--a-dim);}50%{background:var(--a);}}
+.gen-err{background:var(--r-dim);border:1px solid rgba(248,113,113,.2);border-radius:var(--rad-sm);padding:14px;max-width:320px;font-size:13px;color:var(--r);line-height:1.5;}
 
 /* ── QUIZ ── */
-#s-quiz{}
-.quiz-q{font-family:var(--fn);font-size:20px;font-weight:700;line-height:1.3;margin-bottom:6px;}
-.quiz-num{font-size:12px;color:var(--tm);margin-bottom:12px;}
+.quiz-bar{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
+.quiz-bar-f{height:100%;background:var(--a2);border-radius:2px;transition:width .3s ease;}
+.quiz-num{font-size:12px;color:var(--tm);}
+.quiz-q{font-family:var(--fn);font-size:19px;font-weight:700;line-height:1.35;}
 .quiz-opts{display:flex;flex-direction:column;gap:10px;}
-.quiz-opt{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--rad-sm);padding:14px 18px;cursor:pointer;font-size:14px;font-weight:500;transition:all .2s;text-align:left;color:var(--t);font-family:var(--fb);}
-.quiz-opt:hover:not(.answered){border-color:var(--a);background:var(--a-dim);color:var(--a);}
-.quiz-opt.correct{border-color:var(--g)!important;background:var(--g-dim)!important;color:var(--g)!important;}
-.quiz-opt.wrong{border-color:var(--r)!important;background:var(--r-dim)!important;color:var(--r)!important;}
-.quiz-opt.answered{cursor:default;}
-.quiz-progress{height:4px;background:var(--s3);border-radius:2px;overflow:hidden;}
-.quiz-progress-fill{height:100%;background:var(--a2);border-radius:2px;transition:width .3s ease;}
+.qopt{background:var(--s1);border:1.5px solid var(--border);border-radius:var(--rad-sm);padding:13px 16px;cursor:pointer;font-size:14px;transition:all .2s;text-align:left;color:var(--t);font-family:var(--fb);}
+.qopt:hover:not(.done){border-color:var(--a);background:var(--a-dim);color:var(--a);}
+.qopt.ok{border-color:var(--g)!important;background:var(--g-dim)!important;color:var(--g)!important;}
+.qopt.wrong{border-color:var(--r)!important;background:var(--r-dim)!important;color:var(--r)!important;}
+.qopt.done{cursor:default;}
 
 /* ── RESULTS ── */
-#s-results{}
-.results-hero{text-align:center;padding:16px 0;}
-.results-grade{font-family:var(--fn);font-size:72px;font-weight:800;line-height:1;}
-.results-subtitle{font-size:14px;color:var(--tm);margin-top:8px;}
-.results-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.metric-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:20px;text-align:center;}
-.metric-val{font-family:var(--fn);font-size:36px;font-weight:800;margin-bottom:4px;}
-.metric-lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--tm);}
-.insight-card{background:var(--s2);border-radius:var(--rad);padding:18px;border-left:3px solid var(--a);}
-.insight-text{font-size:13px;color:var(--tm);line-height:1.6;}
-.answers-list{display:flex;flex-direction:column;gap:8px;}
-.ans-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--rad-sm);font-size:12px;}
+.res-hero{text-align:center;padding:10px 0;}
+.res-grade{font-size:72px;line-height:1;}
+.res-sub{font-size:13px;color:var(--tm);margin-top:8px;}
+.res-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.metric{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:18px;text-align:center;}
+.metric-v{font-family:var(--fn);font-size:34px;font-weight:800;margin-bottom:4px;}
+.metric-l{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--tm);}
+.insight{background:var(--s2);border-radius:var(--rad-sm);padding:16px;border-left:3px solid var(--a);}
+.insight-t{font-size:13px;color:var(--tm);line-height:1.65;}
+.ans-list{display:flex;flex-direction:column;gap:8px;}
+.ans-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--rad-sm);font-size:12px;line-height:1.4;}
 .ans-item.ok{background:var(--g-dim);}
 .ans-item.bad{background:var(--r-dim);}
-.ans-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
-.ans-text{flex:1;line-height:1.4;}
 .ans-correct{color:var(--td);font-style:italic;margin-top:2px;}
 
 /* ── HISTORY ── */
-#s-history{}
-.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:20px;}
-.sessions-list{display:flex;flex-direction:column;gap:8px;}
-.sess-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:12px 16px;display:flex;align-items:center;gap:14px;}
-.sess-mode{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.chart-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad);padding:18px;}
+.sess-list{display:flex;flex-direction:column;gap:8px;}
+.sess{background:var(--s1);border:1px solid var(--border);border-radius:var(--rad-sm);padding:12px 15px;display:flex;align-items:center;gap:12px;}
+.sess-ic{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
 .sess-info{flex:1;}
-.sess-title{font-size:13px;font-weight:600;margin-bottom:2px;}
+.sess-title{font-size:13px;font-weight:600;margin-bottom:1px;}
 .sess-date{font-size:11px;color:var(--td);}
-.sess-stats{text-align:right;}
-.sess-wpm{font-family:var(--fn);font-size:18px;font-weight:800;color:var(--a);}
-.sess-comp{font-size:11px;color:var(--tm);}
-.empty-history{text-align:center;padding:48px 24px;color:var(--td);}
-.empty-history-icon{font-size:40px;margin-bottom:12px;}
-.empty-history-text{font-size:14px;line-height:1.5;}
-
-/* ── TRANSITIONS ── */
-.screen{animation:fadeIn .2s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-
-/* ── MISC ── */
-.section-title{font-family:var(--fn);font-size:13px;font-weight:700;color:var(--tm);letter-spacing:.5px;margin-bottom:2px;}
-.divider{height:1px;background:var(--border);}
-input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:var(--s3);outline:none;}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--a2);cursor:pointer;}
+.sess-wpm{font-family:var(--fn);font-size:17px;font-weight:800;color:var(--a);text-align:right;}
+.sess-comp{font-size:11px;color:var(--tm);text-align:right;}
+.empty{text-align:center;padding:48px 24px;color:var(--td);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-t{font-size:14px;line-height:1.5;}
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- ══ HOME ══ -->
-<div class="screen active" id="s-home">
-  <div class="home-header">
-    <div class="home-logo">Read<span>Fit</span></div>
-    <div class="streak-pill" id="streak-pill">🔥 <span id="streak-val">0</span> day streak</div>
+<!-- ═══ SETUP ═══ -->
+<div class="screen flow" id="s-setup">
+  <div class="setup-wrap">
+    <div class="setup-logo">Read<span>Fit</span></div>
+    <div class="setup-card">
+      <div class="setup-head">🤖 Unlock AI Questions</div>
+      <div class="setup-sub">ReadFit uses Claude to generate personalized comprehension questions for any text you upload. Add your Anthropic API key to enable this feature.</div>
+      <div class="inp-wrap">
+        <div class="inp-lbl">Anthropic API Key</div>
+        <input class="inp" id="setup-key" type="password" placeholder="sk-ant-..."/>
+        <div class="inp-err" id="setup-err"></div>
+      </div>
+      <a class="setup-link" href="https://console.anthropic.com" target="_blank">Get a free API key at console.anthropic.com →</a>
+      <button class="btn btn-p" onclick="saveSetupKey()">Save & Start Training</button>
+    </div>
+    <div class="setup-skip" onclick="skipSetup()">Skip for now — use built-in texts only</div>
   </div>
+</div>
 
+<!-- ═══ HOME ═══ -->
+<div class="screen" id="s-home">
+  <div class="home-hdr">
+    <div class="logo">Read<span>Fit</span></div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="streak-pill">🔥 <span id="streak-n">0</span></div>
+      <div class="icon-btn" onclick="openSettings()" title="Settings">⚙</div>
+    </div>
+  </div>
   <div class="card wpm-card">
-    <div class="label" style="margin-bottom:16px">Your Reading Speed</div>
-    <div class="wpm-ring-wrap">
-      <svg class="wpm-svg" viewBox="0 0 160 160">
-        <circle class="ring-bg" cx="80" cy="80" r="66"/>
-        <circle class="ring-fill" id="ring-fill" cx="80" cy="80" r="66" stroke-dasharray="0 414.7"/>
+    <div class="label" style="margin-bottom:14px">Reading Speed</div>
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 150 150">
+        <circle class="ring-bg" cx="75" cy="75" r="62"/>
+        <circle class="ring-f" id="ring-f" cx="75" cy="75" r="62" stroke-dasharray="0 389.6"/>
       </svg>
-      <div class="ring-center">
-        <div class="ring-wpm" id="ring-wpm">—</div>
-        <div class="ring-label">WPM avg</div>
+      <div class="ring-ctr">
+        <div class="ring-num" id="ring-n">—</div>
+        <div class="ring-lbl">WPM avg</div>
       </div>
     </div>
-    <div class="wpm-level" id="wpm-level">Complete a session to begin</div>
+    <div id="wpm-lv" style="font-size:13px;color:var(--tm);">Complete a session to begin</div>
   </div>
-
   <div class="stats-row">
-    <div class="stat-card">
-      <div class="stat-num" id="stat-sessions">0</div>
-      <div class="stat-lbl">Sessions</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-best">—</div>
-      <div class="stat-lbl">Best WPM</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-num" id="stat-comp">—</div>
-      <div class="stat-lbl">Avg Comp.</div>
-    </div>
+    <div class="stat"><div class="stat-n" id="st-sess">0</div><div class="stat-l">Sessions</div></div>
+    <div class="stat"><div class="stat-n" id="st-best">—</div><div class="stat-l">Best WPM</div></div>
+    <div class="stat"><div class="stat-n" id="st-comp">—</div><div class="stat-l">Avg Comp.</div></div>
   </div>
-
-  <div class="section-title">Choose your workout</div>
+  <div class="label">Choose your workout</div>
   <div class="mode-cards">
-    <div class="mode-card mc-test" onclick="startFlow('test')">
-      <div class="mode-card-icon">📖</div>
-      <div class="mode-card-text">
-        <div class="mode-card-title">Reading Test</div>
-        <div class="mode-card-desc">Read at your natural pace · Measure your true WPM · Answer a comprehension quiz</div>
+    <div class="mc mc-test" onclick="startFlow('test')">
+      <div class="mc-icon">📖</div>
+      <div class="mc-body">
+        <div class="mc-title">Reading Test</div>
+        <div class="mc-desc">Read at your pace · Measure true WPM · Comprehension quiz</div>
       </div>
-      <div class="mode-card-arrow">›</div>
+      <div class="mc-arr">›</div>
     </div>
-    <div class="mode-card mc-rsvp" onclick="startFlow('rsvp')">
-      <div class="mode-card-icon">⚡</div>
-      <div class="mode-card-text">
-        <div class="mode-card-title">RSVP Sprint</div>
-        <div class="mode-card-desc">Words flash one at a time · Train your eyes to keep pace · Push your comfort zone</div>
+    <div class="mc mc-rsvp" onclick="startFlow('rsvp')">
+      <div class="mc-icon">⚡</div>
+      <div class="mc-body">
+        <div class="mc-title">RSVP Sprint</div>
+        <div class="mc-desc">Words flash one at a time · Train your eyes · Push pace</div>
       </div>
-      <div class="mode-card-arrow">›</div>
+      <div class="mc-arr">›</div>
     </div>
   </div>
   <div style="height:4px"></div>
 </div>
 
-<!-- ══ PASSAGE SELECT ══ -->
-<div class="screen flow" id="s-passage" style="gap:14px;">
-  <div class="flow-header">
+<!-- ═══ SETTINGS ═══ -->
+<div class="screen flow" id="s-settings">
+  <div class="flow-hdr">
     <div class="back-btn" onclick="goHome()">‹</div>
-    <div class="flow-title" id="passage-flow-title">Choose a passage</div>
-    <div class="step-pip">
-      <div class="pip active" id="pip1"></div>
-      <div class="pip" id="pip2"></div>
-      <div class="pip" id="pip3"></div>
+    <div class="flow-title">Settings</div>
+    <div></div>
+  </div>
+  <div class="settings-section">
+    <div class="settings-item">
+      <div class="settings-item-title">🤖 API Key</div>
+      <div class="settings-item-desc">Used to generate AI comprehension questions for your uploaded texts. Stored only on this device.</div>
+      <div class="key-preview" id="key-preview">No key set</div>
+      <div class="inp-wrap" style="margin-bottom:10px;">
+        <input class="inp" id="settings-key" type="password" placeholder="sk-ant-api-key..."/>
+      </div>
+      <button class="btn btn-p" onclick="saveSettingsKey()">Save Key</button>
+    </div>
+    <div class="settings-item">
+      <div class="settings-item-title">📂 Custom Text</div>
+      <div class="settings-item-desc" id="custom-text-info">No custom text uploaded yet.</div>
+      <button class="btn btn-g" onclick="openUpload()">Upload / Change Text</button>
+    </div>
+    <div class="settings-item">
+      <div class="settings-item-title">🗑 Data</div>
+      <div class="settings-item-desc">Clear all training sessions and reset progress.</div>
+      <button class="btn btn-danger" onclick="clearAllData()">Clear All Sessions</button>
     </div>
   </div>
-  <div class="label">Select what you want to read</div>
+</div>
+
+<!-- ═══ UPLOAD ═══ -->
+<div class="screen flow" id="s-upload">
+  <div class="flow-hdr">
+    <div class="back-btn" onclick="uploadBack()">‹</div>
+    <div class="flow-title">Upload Text</div>
+    <div></div>
+  </div>
+  <div class="upload-tabs">
+    <button class="utab on" id="utab-paste" onclick="switchUpTab('paste')">📋 Paste</button>
+    <button class="utab" id="utab-file" onclick="switchUpTab('file')">📎 File</button>
+  </div>
+  <div id="up-paste">
+    <textarea class="paste-area" id="paste-area" placeholder="Paste your text here — articles, chapters, reports, anything you want to speed read…"></textarea>
+  </div>
+  <div id="up-file" style="display:none;flex-direction:column;gap:12px;">
+    <div class="file-zone" onclick="document.getElementById('file-in').click()">
+      <div class="file-zone-icon">📁</div>
+      <div class="file-zone-title">Tap to browse files</div>
+      <div class="file-zone-sub">or drag & drop on desktop</div>
+      <div class="file-types">
+        <span class="file-type">TXT</span>
+        <span class="file-type">PDF</span>
+        <span class="file-type">DOCX</span>
+      </div>
+    </div>
+    <input type="file" id="file-in" accept=".txt,.pdf,.docx,text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none" onchange="handleFileInput(this)">
+    <div id="file-status" style="font-size:13px;color:var(--tm);text-align:center;display:none;"></div>
+  </div>
+  <div id="text-preview-wrap" style="display:none;flex-direction:column;gap:10px;">
+    <div class="inp-wrap">
+      <div class="inp-lbl">Title (optional)</div>
+      <input class="inp" id="custom-title" type="text" placeholder="My Article"/>
+    </div>
+    <div class="text-preview">
+      <div class="text-preview-stat" id="tp-stats"></div>
+      <div class="text-preview-body" id="tp-preview"></div>
+    </div>
+    <button class="btn btn-p" onclick="useCustomText()">Use This Text →</button>
+  </div>
+  <div id="upload-err" style="font-size:13px;color:var(--r);display:none;padding:10px;background:var(--r-dim);border-radius:var(--rad-sm);"></div>
+</div>
+
+<!-- ═══ PASSAGE SELECT ═══ -->
+<div class="screen flow" id="s-passage">
+  <div class="flow-hdr">
+    <div class="back-btn" onclick="goHome()">‹</div>
+    <div class="flow-title" id="passage-title">📖 Reading Test</div>
+    <div class="pips">
+      <div class="pip on"></div>
+      <div class="pip"></div>
+      <div class="pip"></div>
+    </div>
+  </div>
+  <div class="label">Select a passage</div>
   <div class="passage-grid" id="passage-grid"></div>
-  <button class="btn btn-primary" id="passage-next-btn" onclick="startSession()" style="display:none">Start Session →</button>
+  <button class="btn btn-p" id="p-next" onclick="startSession()" style="display:none">Start Session →</button>
 </div>
 
-<!-- ══ READING TEST ══ -->
-<div class="screen flow" id="s-reading" style="gap:14px;">
-  <div class="flow-header">
-    <div class="back-btn" onclick="showScreen('s-passage')">‹</div>
+<!-- ═══ READING ═══ -->
+<div class="screen flow" id="s-reading">
+  <div class="flow-hdr">
+    <div class="back-btn" onclick="showScreen('s-passage');clearReadingTimer()">‹</div>
     <div class="flow-title" id="reading-title">Reading Test</div>
-    <div class="step-pip">
-      <div class="pip done"></div>
-      <div class="pip active" id="pip-r2"></div>
-      <div class="pip" id="pip-r3"></div>
-    </div>
+    <div class="pips"><div class="pip done"></div><div class="pip on"></div><div class="pip"></div></div>
   </div>
-  <div class="card" style="text-align:center;padding:16px;">
-    <div class="reading-timer" id="reading-timer">00:00</div>
-    <div class="reading-status" id="reading-status">Tap the passage to start the timer</div>
+  <div class="timer-card">
+    <div class="timer" id="reading-timer">00:00</div>
+    <div class="timer-sub" id="reading-sub">Tap the text below to start</div>
   </div>
-  <div class="reading-text" id="reading-text" onclick="handleReadingClick()"></div>
-  <div class="reading-hint" id="reading-hint">Tap the text above to start · Tap again when done</div>
-  <button class="btn btn-primary btn-icon" id="reading-done-btn" onclick="finishReading()" style="display:none">
-    ✓ Done Reading
-  </button>
+  <div class="reading-body" id="reading-body" onclick="handleReadingClick()"></div>
+  <div class="reading-hint" id="reading-hint">Tap text to start · tap "Done" when finished</div>
+  <button class="btn btn-p" id="reading-done" onclick="finishReading()" style="display:none">✓ Done Reading</button>
 </div>
 
-<!-- ══ RSVP ══ -->
-<div class="screen flow" id="s-rsvp" style="gap:0px;">
-  <div style="padding:0 0 12px;display:flex;flex-direction:column;gap:12px;">
-    <div class="flow-header">
+<!-- ═══ RSVP ═══ -->
+<div class="screen flow" id="s-rsvp" style="gap:0;">
+  <div style="display:flex;flex-direction:column;gap:12px;padding-bottom:8px;">
+    <div class="flow-hdr">
       <div class="back-btn" onclick="showScreen('s-passage');stopRSVP()">‹</div>
       <div class="flow-title" id="rsvp-title">RSVP Sprint</div>
-      <div class="step-pip">
-        <div class="pip done"></div>
-        <div class="pip active"></div>
-        <div class="pip"></div>
-      </div>
+      <div class="pips"><div class="pip done"></div><div class="pip on"></div><div class="pip"></div></div>
     </div>
-    <div class="rsvp-controls">
-      <div>
-        <button class="speed-btn" onclick="changeSpeed(-25)">−</button>
-      </div>
-      <div>
-        <div class="rsvp-wpm-display" id="rsvp-wpm-val">250</div>
-        <div class="rsvp-wpm-label">WPM</div>
-      </div>
-      <div>
-        <button class="speed-btn" onclick="changeSpeed(25)">+</button>
-      </div>
+    <div class="rsvp-ctrl">
+      <button class="speed-btn" onclick="changeSpeed(-25)">−</button>
+      <div><div class="rsvp-wpm-num" id="rsvp-wpm-n">250</div><div class="rsvp-wpm-lbl">WPM</div></div>
+      <button class="speed-btn" onclick="changeSpeed(25)">+</button>
     </div>
   </div>
-  <div class="rsvp-stage" id="rsvp-stage">
+  <div class="rsvp-stage">
     <div class="rsvp-ready" id="rsvp-ready">
-      <div style="font-size:48px">⚡</div>
-      <div class="rsvp-ready-title">Ready to sprint?</div>
-      <div class="rsvp-ready-sub">Words will flash one at a time.<br>Set your speed above, then press play.</div>
-      <button class="rsvp-play-btn" onclick="startRSVP()">▶</button>
+      <div class="rsvp-ready-icon">⚡</div>
+      <div class="rsvp-ready-h">Ready to sprint?</div>
+      <div class="rsvp-ready-s">Words flash one at a time.<br>Set your speed, then press play.</div>
+      <button class="play-btn" onclick="startRSVP()">▶</button>
     </div>
-    <div id="rsvp-running" style="display:none;flex-direction:column;align-items:center;width:100%;gap:12px;">
+    <div class="rsvp-running" id="rsvp-run">
       <div class="rsvp-word" id="rsvp-word">—</div>
       <div class="rsvp-focal"></div>
       <div class="rsvp-count" id="rsvp-count">0 / 0</div>
-      <div class="rsvp-progress" style="margin:0 24px;">
-        <div class="rsvp-progress-fill" id="rsvp-progress-fill" style="width:0%"></div>
-      </div>
-      <button class="rsvp-play-btn" id="rsvp-pause-btn" onclick="toggleRSVP()">⏸</button>
+      <div class="rsvp-bar"><div class="rsvp-bar-f" id="rsvp-bar-f" style="width:0%"></div></div>
+      <button class="play-btn" id="rsvp-pause" onclick="toggleRSVP()">⏸</button>
     </div>
   </div>
 </div>
 
-<!-- ══ QUIZ ══ -->
-<div class="screen flow" id="s-quiz" style="gap:14px;">
-  <div class="flow-header">
+<!-- ═══ GENERATING ═══ -->
+<div class="screen flow" id="s-gen">
+  <div class="gen-spinner" id="gen-spinner"></div>
+  <div class="gen-title">Reading your text…</div>
+  <div class="gen-sub" id="gen-sub">Claude is generating personalized comprehension questions for you.</div>
+  <div class="gen-dots" id="gen-dots">
+    <div class="gen-dot"></div><div class="gen-dot"></div><div class="gen-dot"></div>
+  </div>
+  <div class="gen-err" id="gen-err" style="display:none"></div>
+  <div id="gen-actions" style="display:none;flex-direction:column;gap:10px;width:100%;max-width:300px;">
+    <button class="btn btn-p" onclick="retryGenerate()">Retry</button>
+    <button class="btn btn-g" onclick="proceedWithoutQuiz()">Continue without quiz</button>
+  </div>
+</div>
+
+<!-- ═══ QUIZ ═══ -->
+<div class="screen flow" id="s-quiz">
+  <div class="flow-hdr">
     <div class="back-btn" style="opacity:.3;cursor:default;">‹</div>
     <div class="flow-title">Comprehension Quiz</div>
-    <div class="step-pip">
-      <div class="pip done"></div>
-      <div class="pip done"></div>
-      <div class="pip active"></div>
-    </div>
+    <div class="pips"><div class="pip done"></div><div class="pip done"></div><div class="pip on"></div></div>
   </div>
-  <div class="quiz-progress">
-    <div class="quiz-progress-fill" id="quiz-prog-fill" style="width:25%"></div>
-  </div>
-  <div class="quiz-num" id="quiz-num">Question 1 of 4</div>
+  <div class="quiz-bar"><div class="quiz-bar-f" id="quiz-bar-f" style="width:0%"></div></div>
+  <div class="quiz-num" id="quiz-num">Question 1 of 6</div>
   <div class="quiz-q" id="quiz-q"></div>
   <div class="quiz-opts" id="quiz-opts"></div>
-  <div style="height:8px"></div>
 </div>
 
-<!-- ══ RESULTS ══ -->
-<div class="screen flow" id="s-results" style="gap:14px;">
-  <div class="flow-header">
+<!-- ═══ RESULTS ═══ -->
+<div class="screen flow" id="s-results">
+  <div class="flow-hdr">
     <div class="back-btn" style="opacity:.3;cursor:default;">‹</div>
     <div class="flow-title">Session Results</div>
     <div></div>
   </div>
-  <div class="results-hero">
-    <div class="results-grade" id="results-grade"></div>
-    <div class="results-subtitle" id="results-subtitle"></div>
+  <div class="res-hero">
+    <div class="res-grade" id="res-grade">🏆</div>
+    <div class="res-sub" id="res-sub"></div>
   </div>
-  <div class="results-metrics">
-    <div class="metric-card">
-      <div class="metric-val" id="res-wpm" style="color:var(--a)">—</div>
-      <div class="metric-lbl">Words / Min</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-val" id="res-comp" style="color:var(--g)">—</div>
-      <div class="metric-lbl">Comprehension</div>
-    </div>
+  <div class="res-metrics">
+    <div class="metric"><div class="metric-v" id="res-wpm" style="color:var(--a)">—</div><div class="metric-l">Words / Min</div></div>
+    <div class="metric"><div class="metric-v" id="res-comp" style="color:var(--g)">—</div><div class="metric-l">Comprehension</div></div>
   </div>
-  <div class="insight-card" id="res-insight"></div>
-  <div class="section-title">Quiz breakdown</div>
-  <div class="answers-list" id="res-answers"></div>
-  <div class="btn-row">
-    <button class="btn btn-ghost" onclick="goHome()">Home</button>
-    <button class="btn btn-primary" onclick="startFlow(currentMode)">Train Again</button>
+  <div class="insight"><div class="insight-t" id="res-insight"></div></div>
+  <div class="label" id="res-ans-lbl" style="display:none">Quiz breakdown</div>
+  <div class="ans-list" id="res-ans"></div>
+  <div class="btn-row" style="margin-top:4px;">
+    <button class="btn btn-g" onclick="goHome()">Home</button>
+    <button class="btn btn-p" onclick="startFlow(curMode)">Train Again</button>
   </div>
   <div style="height:4px"></div>
 </div>
 
-<!-- ══ HISTORY ══ -->
+<!-- ═══ HISTORY ═══ -->
 <div class="screen" id="s-history">
-  <div class="home-logo" style="font-size:18px;">Read<span style="color:var(--a)">Fit</span> · Progress</div>
-  <div class="card chart-card">
-    <div class="label" style="margin-bottom:14px">WPM Over Time</div>
-    <canvas id="wpm-chart" height="160"></canvas>
+  <div class="logo" style="font-size:18px;">Read<span style="color:var(--a)">Fit</span> · Progress</div>
+  <div class="chart-card">
+    <div class="label" style="margin-bottom:12px">WPM Over Time</div>
+    <canvas id="wpm-chart" height="150"></canvas>
   </div>
-  <div id="history-body"></div>
+  <div id="hist-body"></div>
 </div>
 
-<!-- ══ NAV ══ -->
+<!-- NAV -->
 <nav id="nav">
-  <button class="nav-btn active" id="nav-home" onclick="navTo('home')">
+  <button class="nav-btn on" id="nb-home" onclick="navTo('home')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
     Home
   </button>
-  <button class="nav-btn" id="nav-train" onclick="navTo('train')">
+  <button class="nav-btn" id="nb-train" onclick="navTo('train')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
     Train
   </button>
-  <button class="nav-btn" id="nav-history" onclick="navTo('history')">
+  <button class="nav-btn" id="nb-hist" onclick="navTo('history')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     Progress
   </button>
@@ -436,11 +524,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script>
-// ─── PASSAGES ─────────────────────────────────────────────────
+// ── PASSAGES ─────────────────────────────────────────────────
 const PASSAGES = {
-  ocean: {
-    id:'ocean', title:'The Deep Ocean', genre:'Non-fiction · Science', icon:'🌊',
+  ocean:{id:'ocean',title:'The Deep Ocean',genre:'Non-fiction · Science',icon:'🌊',
     text:`The deep ocean remains one of Earth's least explored frontiers. Covering more than seventy percent of our planet's surface, the oceans reach depths of nearly eleven kilometers at their lowest point — the Challenger Deep in the Mariana Trench. Despite this immense scale, scientists estimate that less than twenty percent of the world's oceans have been mapped with any meaningful detail.
 
 Life in the deep has evolved extraordinary adaptations to survive under crushing pressure, near-freezing temperatures, and complete darkness. Bioluminescence is common: anglerfish dangle glowing lures to attract prey, while squid use flashing light patterns to communicate. Many organisms have transparent or gelatinous bodies that help them move silently through the water column.
@@ -449,14 +538,12 @@ Food sources in the deep are surprisingly varied. Many animals survive on marine
 
 Modern technology is beginning to unlock these secrets. Remotely operated vehicles and reinforced submersibles allow scientists to film and sample life at depths that would crush an unprotected human in seconds. Each new expedition brings discoveries of species entirely unknown to science, reminding us how much life flourishes beyond the reach of light, in the cold and silent world beneath the waves.`,
     questions:[
-      {q:"Where is the deepest known point in the ocean?",opts:["The Atlantic Ridge","The Mariana Trench","The Arctic Basin","The Pacific Shelf"],ans:1},
-      {q:"What percentage of the ocean has been mapped in meaningful detail?",opts:["Less than 20%","About 50%","Around 70%","Nearly all of it"],ans:0},
-      {q:"What is 'marine snow'?",opts:["Ice crystals at the surface","Bioluminescent particles from fish","Dead organic material drifting from above","Mineral deposits from vents"],ans:2},
-      {q:"What powers ecosystems near hydrothermal vents?",opts:["Sunlight filtered from above","Electrical currents","Bioluminescence","Chemosynthesis"],ans:3}
-    ]
-  },
-  fiction: {
-    id:'fiction', title:'The Last Train', genre:'Fiction', icon:'🚂',
+      {q:'Where is the deepest known point in the ocean?',opts:['The Atlantic Ridge','The Mariana Trench','The Arctic Basin','The Pacific Shelf'],ans:1},
+      {q:'What percentage of the ocean has been mapped in detail?',opts:['Less than 20%','About 50%','Around 70%','Nearly all of it'],ans:0},
+      {q:"What is 'marine snow'?",opts:['Ice crystals at the surface','Bioluminescent particles','Dead organic material drifting down','Mineral deposits from vents'],ans:2},
+      {q:'What powers ecosystems near hydrothermal vents?',opts:['Filtered sunlight','Electrical currents','Bioluminescence','Chemosynthesis'],ans:3}
+    ]},
+  fiction:{id:'fiction',title:'The Last Train',genre:'Fiction',icon:'🚂',
     text:`The platform was empty when Clara arrived, which was unusual for a Tuesday evening. The clock above Track Four blinked 11:47 — three minutes to the last train. She set her bag down and listened to the station: distant traffic, the hum of fluorescent lights, nothing else.
 
 She had been rehearsing this conversation for six months. Every possible version, in every possible order. But now, standing beneath the flat white light of Montrose Station, she could not remember a single sentence. Only the image of her mother at breakfast that morning, folding her newspaper into precise thirds as if each crease were a considered statement.
@@ -469,14 +556,12 @@ The doors waited. She stepped on.
 
 Whatever she was going to say to her mother, she would work it out on the journey. The train moved, the platform disappeared behind her, and Clara exhaled for what felt like the first time in months. She looked out the window at the rushing dark, and felt, for no clear reason, something close to relief.`,
     questions:[
-      {q:"What time did Clara arrive at the platform?",opts:["11:30","11:44","11:47","Midnight"],ans:2},
-      {q:"Why had Clara originally moved to the city?",opts:["To be near family","For a job","To escape a relationship","For university"],ans:1},
-      {q:"How long had Clara been rehearsing the conversation with her mother?",opts:["A few weeks","Three months","Six months","Over a year"],ans:2},
-      {q:"What emotion does Clara feel at the very end of the passage?",opts:["Dread and anxiety","Anger at her mother","Something close to relief","Deep sadness"],ans:2}
-    ]
-  },
-  tech: {
-    id:'tech', title:'The Rise of Quiet Tech', genre:'Technology · News', icon:'📱',
+      {q:'What time did Clara arrive at the platform?',opts:['11:30','11:44','11:47','Midnight'],ans:2},
+      {q:'Why had Clara originally moved to the city?',opts:['To be near family','For a job','To escape a relationship','For university'],ans:1},
+      {q:'How long had Clara been rehearsing the conversation?',opts:['A few weeks','Three months','Six months','Over a year'],ans:2},
+      {q:'What emotion does Clara feel at the end of the passage?',opts:['Dread and anxiety','Anger','Something close to relief','Deep sadness'],ans:2}
+    ]},
+  tech:{id:'tech',title:'The Rise of Quiet Tech',genre:'Technology · News',icon:'📱',
     text:`For decades, the most celebrated advances in consumer technology were defined by what you could see: larger screens, thinner laptops, more vivid displays. But the most significant innovations of the past several years have been almost entirely invisible.
 
 Modern smartphones now contain dedicated chips for machine learning — processing that would have required a data center just five years ago happens silently in your pocket in milliseconds. Noise-canceling algorithms analyze and reconstruct sound waves thousands of times per second. Navigation apps predict traffic patterns across entire cities before congestion has fully formed.
@@ -487,14 +572,12 @@ On the other hand, invisible systems raise invisible questions. When technology 
 
 Regulators are beginning to respond. The European Union's AI Act, the most comprehensive legislative framework yet attempted, requires that consequential automated systems be explainable to the people they affect. Whether this standard can keep pace with the rate of technological change remains, for now, an open question.`,
     questions:[
-      {q:"What historically defined major technological advances?",opts:["Invisible software improvements","Visible features like screens and hardware","Battery life gains","Internet speed"],ans:1},
-      {q:"What does 'quiet technology' mean in this context?",opts:["Devices with lower sound output","Systems working without user awareness","Software that runs in sleep mode","Notification-free devices"],ans:1},
-      {q:"What concern does the author raise about invisible systems?",opts:["They use too much energy","They are hard to update","They raise questions about responsibility and control","They require constant connectivity"],ans:2},
-      {q:"What does the EU's AI Act require?",opts:["All AI must be open source","Automated systems must be explainable to those they affect","AI decisions must be reviewed by humans","Devices need manual override switches"],ans:1}
-    ]
-  },
-  memory: {
-    id:'memory', title:'How Memory Works', genre:'Science · Psychology', icon:'🧠',
+      {q:'What historically defined major tech advances?',opts:['Invisible software','Visible hardware like screens','Battery life','Internet speed'],ans:1},
+      {q:"What does 'quiet technology' mean here?",opts:['Lower sound output','Systems working without user awareness','Sleep-mode software','Notification-free devices'],ans:1},
+      {q:'What concern does the author raise about invisible systems?',opts:['Energy usage','Difficulty updating','Questions of responsibility and control','Connectivity requirements'],ans:2},
+      {q:"What does the EU's AI Act require?",opts:['All AI must be open source','Automated systems must be explainable','AI decisions reviewed by humans','Manual override switches'],ans:1}
+    ]},
+  memory:{id:'memory',title:'How Memory Works',genre:'Science · Psychology',icon:'🧠',
     text:`Memory is not a single system but a collection of distinct processes, each handled by different regions of the brain. Understanding this architecture helps explain why certain experiences are recalled vividly for decades while others fade within hours of occurring.
 
 The process begins with encoding — the brain converting sensory input into a form that can be stored. Attention acts as the gatekeeper: information that fails to capture focus is rarely encoded at all. Emotion strengthens encoding considerably; the brain's amygdala marks emotionally significant events as high priority, which is why traumatic or deeply joyful experiences tend to persist long after ordinary moments have been forgotten.
@@ -505,470 +588,656 @@ Working memory — the type used for immediate tasks like mental arithmetic or f
 
 The practical implication is clear: memory is less about passive storage and more about active reconstruction. What we remember is shaped as much by how and when we revisit it as by the original experience itself.`,
     questions:[
-      {q:"What role does the amygdala play in memory?",opts:["It manages working memory tasks","It converts sound into storable form","It marks emotionally significant events as high priority","It controls sleep consolidation"],ans:2},
-      {q:"What happens to a memory when it is recalled?",opts:["It becomes permanently stronger","It fades unless immediately reviewed","It becomes temporarily unstable and is reconsolidated","It moves to a different brain region"],ans:2},
-      {q:"How many items can working memory typically hold at once?",opts:["One to three","Four to seven","Ten to fifteen","Unlimited"],ans:1},
-      {q:"According to the passage, what is memory best described as?",opts:["A fixed recording of events","Active reconstruction shaped by how we revisit it","A purely emotional process","A function of sleep alone"],ans:1}
-    ]
-  }
+      {q:"What role does the amygdala play?",opts:['Manages working memory','Converts sound to memory','Marks emotionally significant events as high priority','Controls sleep consolidation'],ans:2},
+      {q:'What happens to a memory when recalled?',opts:['It becomes stronger','It fades without review','It becomes temporarily unstable and is reconsolidated','It moves to a different region'],ans:2},
+      {q:'How many items can working memory hold?',opts:['One to three','Four to seven','Ten to fifteen','Unlimited'],ans:1},
+      {q:'What is memory best described as?',opts:['A fixed recording','Active reconstruction shaped by revisiting','A purely emotional process','A function of sleep alone'],ans:1}
+    ]}
 };
-const PASSAGE_ORDER = ['ocean','fiction','tech','memory'];
+const P_ORDER = ['ocean','fiction','tech','memory'];
 
-// ─── STATE ────────────────────────────────────────────────────
-let currentMode = 'test';
-let selectedPassage = null;
-let readingStartTime = null;
-let readingTimerInterval = null;
-let readingActive = false;
-let rsvpInterval = null;
-let rsvpWordIndex = 0;
-let rsvpPaused = false;
-let rsvpTargetWPM = 250;
-let rsvpWords = [];
-let quizIndex = 0;
-let quizAnswers = [];
-let sessionWPM = 0;
+// ── STATE ─────────────────────────────────────────────────────
+let curMode = 'test';
+let curPassageId = null;
+let curPassage = null;    // the actual passage object
+let curQuestions = null;  // questions for current session (null = no quiz)
+let pendingSession = null; // session data waiting for questions
+
+let readTimer = null, readStart = null, readActive = false;
+let rsvpTimer = null, rsvpIdx = 0, rsvpPaused = false, rsvpWPM = 250, rsvpWords = [];
+let quizIdx = 0, quizAnswers = [];
+let sessWPM = 0;
 let sessions = [];
 let wpmChart = null;
 
-// ─── STORAGE ──────────────────────────────────────────────────
-function loadData() {
-  try { const d = localStorage.getItem('readfit-v1'); sessions = d ? JSON.parse(d) : []; }
-  catch { sessions = []; }
-}
-function saveData() {
-  try { localStorage.setItem('readfit-v1', JSON.stringify(sessions)); }
-  catch {}
-}
-function addSession(obj) {
-  sessions.push(obj);
-  sessions = sessions.slice(-50);
-  saveData();
-}
+// Upload state
+let uploadedText = '';
+let uploadBack_dest = 's-passage';
 
-// ─── NAVIGATION ───────────────────────────────────────────────
-const SCREENS = ['s-home','s-passage','s-reading','s-rsvp','s-quiz','s-results','s-history'];
-function showScreen(id) {
-  SCREENS.forEach(s => {
-    const el = document.getElementById(s);
-    if (!el) return;
-    el.classList.remove('active');
-    el.style.display = 'none';
-  });
-  const target = document.getElementById(id);
-  if (target) { target.style.display = 'flex'; target.classList.add('active'); }
-  const isFlow = ['s-passage','s-reading','s-rsvp','s-quiz','s-results'].includes(id);
-  document.getElementById('nav').style.display = isFlow ? 'none' : 'flex';
+// ── STORAGE ───────────────────────────────────────────────────
+function loadSess(){try{const d=localStorage.getItem('rf-v2');sessions=d?JSON.parse(d):[];}catch{sessions=[];}}
+function saveSess(){try{localStorage.setItem('rf-v2',JSON.stringify(sessions));}catch{}}
+function loadKey(){return localStorage.getItem('rf-key')||'';}
+function saveKey(k){localStorage.setItem('rf-key',k);}
+function loadCustom(){try{const d=localStorage.getItem('rf-custom');return d?JSON.parse(d):null;}catch{return null;}}
+function saveCustom(o){localStorage.setItem('rf-custom',JSON.stringify(o));}
+function addSession(o){sessions.push(o);sessions=sessions.slice(-100);saveSess();}
+
+// ── NAVIGATION ────────────────────────────────────────────────
+const ALL_SCREENS = ['s-setup','s-home','s-settings','s-upload','s-passage','s-reading','s-rsvp','s-gen','s-quiz','s-results','s-history'];
+const FLOW_SCREENS = ['s-setup','s-settings','s-upload','s-passage','s-reading','s-rsvp','s-gen','s-quiz','s-results'];
+
+function showScreen(id){
+  ALL_SCREENS.forEach(s=>{const el=document.getElementById(s);if(!el)return;el.classList.remove('active');el.style.display='none';});
+  const t=document.getElementById(id);
+  if(t){t.style.display='flex';t.classList.add('active');}
+  document.getElementById('nav').style.display=FLOW_SCREENS.includes(id)?'none':'flex';
 }
 
-function navTo(tab) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-'+tab).classList.add('active');
-  if (tab === 'home') { showScreen('s-home'); refreshHome(); }
-  else if (tab === 'train') { startFlow('test'); }
-  else if (tab === 'history') { showScreen('s-history'); renderHistory(); }
+function navTo(tab){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('nb-'+tab).classList.add('on');
+  if(tab==='home'){showScreen('s-home');refreshHome();}
+  else if(tab==='train'){startFlow('test');}
+  else if(tab==='history'){showScreen('s-history');renderHistory();}
 }
 
-function goHome() {
-  stopRSVP(); clearReadingTimer();
-  showScreen('s-home'); refreshHome();
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-home').classList.add('active');
-  document.getElementById('nav').style.display = 'flex';
+function goHome(){
+  stopRSVP();clearReadingTimer();
+  showScreen('s-home');refreshHome();
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('nb-home').classList.add('on');
 }
 
-// ─── HOME ─────────────────────────────────────────────────────
-function refreshHome() {
-  loadData();
-  const el = id => document.getElementById(id);
+// ── SETUP ─────────────────────────────────────────────────────
+function checkSetup(){
+  loadSess();
+  const key=loadKey();
+  // Always go to home; setup is optional
+  showScreen('s-home');refreshHome();
+  // If no key and first time, nudge (but don't block)
+}
 
-  if (!sessions.length) {
-    el('ring-wpm').textContent = '—';
-    el('wpm-level').textContent = 'Complete a session to begin';
-    el('ring-fill').setAttribute('stroke-dasharray', '0 414.7');
-    el('stat-sessions').textContent = '0';
-    el('stat-best').textContent = '—';
-    el('stat-comp').textContent = '—';
-  } else {
-    const avgWPM = Math.round(sessions.reduce((s,x) => s+x.wpm, 0) / sessions.length);
-    const bestWPM = Math.max(...sessions.map(x => x.wpm));
-    const avgComp = Math.round(sessions.reduce((s,x) => s+x.comp, 0) / sessions.length);
-    const pct = Math.min(avgWPM / 500, 1);
-    const dash = pct * 414.7;
+function saveSetupKey(){
+  const k=document.getElementById('setup-key').value.trim();
+  const err=document.getElementById('setup-err');
+  if(k&&!k.startsWith('sk-ant-')){err.textContent='API key should start with sk-ant-';return;}
+  if(k)saveKey(k);
+  err.textContent='';
+  goHome();
+}
+function skipSetup(){goHome();}
 
-    el('ring-wpm').textContent = avgWPM;
-    el('ring-fill').setAttribute('stroke-dasharray', `${dash} 414.7`);
-    el('wpm-level').textContent = wpmLevel(avgWPM);
-    el('stat-sessions').textContent = sessions.length;
-    el('stat-best').textContent = bestWPM;
-    el('stat-comp').textContent = avgComp + '%';
+// ── SETTINGS ──────────────────────────────────────────────────
+function openSettings(){
+  const k=loadKey();
+  document.getElementById('key-preview').textContent=k?'sk-ant-…'+k.slice(-8):'No key set';
+  const custom=loadCustom();
+  document.getElementById('custom-text-info').textContent=custom?`"${custom.title}" · ${custom.wc} words`:'No custom text uploaded yet.';
+  showScreen('s-settings');
+}
+function saveSettingsKey(){
+  const k=document.getElementById('settings-key').value.trim();
+  if(k){
+    if(!k.startsWith('sk-ant-')){alert('API key should start with sk-ant-');return;}
+    saveKey(k);
+    document.getElementById('key-preview').textContent='sk-ant-…'+k.slice(-8);
+    document.getElementById('settings-key').value='';
+    alert('API key saved!');
   }
-
-  // Streak
-  const streak = calcStreak();
-  el('streak-val').textContent = streak;
+}
+function clearAllData(){
+  if(!confirm('Clear all training sessions? This cannot be undone.'))return;
+  sessions=[];saveSess();
+  alert('All sessions cleared.');
 }
 
-function wpmLevel(wpm) {
-  if (wpm < 150) return '📖 Developing reader';
-  if (wpm < 238) return '📚 Average reader';
-  if (wpm < 350) return '⚡ Above average';
-  if (wpm < 500) return '🚀 Fast reader';
+// ── UPLOAD ────────────────────────────────────────────────────
+function openUpload(){
+  uploadedText='';
+  document.getElementById('paste-area').value='';
+  document.getElementById('text-preview-wrap').style.display='none';
+  document.getElementById('upload-err').style.display='none';
+  document.getElementById('file-status').style.display='none';
+  document.getElementById('file-in').value='';
+  switchUpTab('paste');
+  showScreen('s-upload');
+}
+
+function switchUpTab(tab){
+  document.getElementById('up-paste').style.display=tab==='paste'?'flex':'none';
+  document.getElementById('up-file').style.display=tab==='file'?'flex':'none';
+  document.getElementById('utab-paste').classList.toggle('on',tab==='paste');
+  document.getElementById('utab-file').classList.toggle('on',tab==='file');
+  if(tab==='paste'){
+    document.getElementById('up-paste').style.flexDirection='column';
+    document.getElementById('up-paste').style.gap='10px';
+  }
+}
+
+function uploadBack(){showScreen('s-passage');}
+
+async function handleFileInput(input){
+  const file=input.files[0];
+  if(!file)return;
+  const statusEl=document.getElementById('file-status');
+  statusEl.style.display='block';
+  statusEl.textContent='Reading file…';
+  document.getElementById('upload-err').style.display='none';
+  try{
+    let text='';
+    const ext=file.name.split('.').pop().toLowerCase();
+    if(ext==='txt'||file.type==='text/plain'){text=await extractTXT(file);}
+    else if(ext==='pdf'||file.type==='application/pdf'){text=await extractPDF(file);}
+    else if(ext==='docx'||file.type.includes('wordprocessingml')){text=await extractDOCX(file);}
+    else{throw new Error('Unsupported file type. Please use .txt, .pdf, or .docx');}
+    const name=file.name.replace(/\.[^.]+$/,'');
+    statusEl.textContent=`✓ "${file.name}" loaded`;
+    processRawText(text,name);
+  }catch(e){
+    statusEl.style.display='none';
+    showUploadErr(e.message||'Failed to read file.');
+  }
+}
+
+function extractTXT(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result);
+    r.onerror=()=>rej(new Error('Could not read file'));
+    r.readAsText(file);
+  });
+}
+
+async function extractPDF(file){
+  if(!window.pdfjsLib)throw new Error('PDF support requires internet connection. Try copying and pasting the text instead.');
+  pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+  const buf=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+  let text='';
+  for(let i=1;i<=pdf.numPages;i++){
+    const page=await pdf.getPage(i);
+    const content=await page.getTextContent();
+    const pageText=content.items.map(item=>item.str).join(' ');
+    text+=pageText+'\n\n';
+  }
+  return text.trim();
+}
+
+async function extractDOCX(file){
+  if(!window.mammoth)throw new Error('DOCX support requires internet connection. Try copying and pasting the text instead.');
+  const buf=await file.arrayBuffer();
+  const result=await mammoth.extractRawText({arrayBuffer:buf});
+  return result.value;
+}
+
+function processRawText(text,name){
+  text=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').replace(/\n{3,}/g,'\n\n').trim();
+  if(text.length<50){showUploadErr('The text is too short. Please provide at least a few sentences.');return;}
+  uploadedText=text;
+  const wc=text.split(/\s+/).filter(w=>w).length;
+  const estRead=Math.round(wc/238);
+  document.getElementById('custom-title').value=name||'My Text';
+  document.getElementById('tp-stats').innerHTML=`<strong>${wc.toLocaleString()} words</strong> · ~${estRead} min to read · ~${Math.round(wc/rsvpWPM)} min RSVP at ${rsvpWPM} WPM`;
+  document.getElementById('tp-preview').textContent=text.slice(0,200)+'…';
+  document.getElementById('text-preview-wrap').style.display='flex';
+  document.getElementById('text-preview-wrap').style.flexDirection='column';
+  document.getElementById('text-preview-wrap').style.gap='10px';
+}
+
+function useCustomText(){
+  if(!uploadedText){showUploadErr('No text loaded yet.');return;}
+  const title=document.getElementById('custom-title').value.trim()||'My Text';
+  const wc=uploadedText.split(/\s+/).filter(w=>w).length;
+  const custom={title,text:uploadedText,wc,textKey:uploadedText.slice(0,80)+uploadedText.length,questions:null};
+  saveCustom(custom);
+  // Back to passage select
+  renderPassageGrid();
+  selectPassage('custom');
+  showScreen('s-passage');
+}
+
+function showUploadErr(msg){
+  const el=document.getElementById('upload-err');
+  el.textContent=msg;el.style.display='block';
+}
+
+// ── PASSAGE SELECT ────────────────────────────────────────────
+function startFlow(mode){
+  curMode=mode;
+  curPassageId=null;curPassage=null;
+  document.getElementById('passage-title').textContent=mode==='test'?'📖 Reading Test':'⚡ RSVP Sprint';
+  document.getElementById('p-next').style.display='none';
+  renderPassageGrid();
+  showScreen('s-passage');
+}
+
+function renderPassageGrid(){
+  const custom=loadCustom();
+  let html='';
+  if(custom){
+    html+=`<div class="p-card p-custom ${curPassageId==='custom'?'sel':''}" id="pc-custom" onclick="selectPassage('custom')">
+      <div class="p-icon">📄</div>
+      <div><div class="p-title">${custom.title}</div><div class="p-genre">Your upload</div><div class="p-wc">${custom.wc.toLocaleString()} words</div></div>
+    </div>`;
+  }
+  html+=P_ORDER.map(pid=>{
+    const p=PASSAGES[pid];
+    const wc=p.text.split(/\s+/).filter(w=>w).length;
+    return `<div class="p-card ${curPassageId===pid?'sel':''}" id="pc-${pid}" onclick="selectPassage('${pid}')">
+      <div class="p-icon">${p.icon}</div>
+      <div><div class="p-title">${p.title}</div><div class="p-genre">${p.genre}</div><div class="p-wc">${wc} words</div></div>
+    </div>`;
+  }).join('');
+  html+=`<div class="p-card p-add" onclick="openUpload()">
+    <div class="p-icon" style="font-size:22px;color:var(--a)">+</div>
+    <div><div class="p-title" style="color:var(--a)">Upload your own text</div><div class="p-genre">TXT · PDF · DOCX · Paste</div></div>
+  </div>`;
+  document.getElementById('passage-grid').innerHTML=html;
+}
+
+function selectPassage(pid){
+  curPassageId=pid;
+  document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
+  const el=document.getElementById('pc-'+pid);
+  if(el)el.classList.add('sel');
+  document.getElementById('p-next').style.display='block';
+}
+
+async function startSession(){
+  if(!curPassageId)return;
+  curQuestions=null;
+  if(curPassageId==='custom'){
+    curPassage=loadCustom();
+    if(!curPassage)return;
+    // Need to generate questions if not cached
+    const key=loadKey();
+    if(key){
+      await generateAndProceed();
+      return;
+    } else {
+      // No key, proceed without quiz
+      curQuestions=null;
+    }
+  } else {
+    curPassage=PASSAGES[curPassageId];
+    curQuestions=curPassage.questions;
+  }
+  if(curMode==='test')launchReadingTest();
+  else launchRSVP();
+}
+
+// ── GENERATE QUESTIONS ────────────────────────────────────────
+let generatePending=false;
+
+async function generateAndProceed(){
+  // Check cache
+  const custom=loadCustom();
+  if(custom&&custom.questions&&custom.textKey===custom.textKey){
+    curQuestions=custom.questions;
+    if(curMode==='test')launchReadingTest();
+    else launchRSVP();
+    return;
+  }
+  // Show generating screen
+  document.getElementById('gen-sub').textContent='Claude is generating personalized comprehension questions for you.';
+  document.getElementById('gen-spinner').style.display='block';
+  document.getElementById('gen-dots').style.display='flex';
+  document.getElementById('gen-err').style.display='none';
+  document.getElementById('gen-actions').style.display='none';
+  showScreen('s-gen');
+  generatePending=true;
+  try{
+    const questions=await callClaudeAPI(curPassage.text,curPassage.title);
+    curQuestions=questions;
+    // Cache
+    const c=loadCustom();
+    if(c){c.questions=questions;saveCustom(c);}
+    generatePending=false;
+    if(curMode==='test')launchReadingTest();
+    else launchRSVP();
+  }catch(e){
+    generatePending=false;
+    document.getElementById('gen-spinner').style.display='none';
+    document.getElementById('gen-dots').style.display='none';
+    document.getElementById('gen-err').textContent='Could not generate questions: '+(e.message||'Unknown error')+'\n\nCheck your API key in Settings, or continue without a comprehension quiz.';
+    document.getElementById('gen-err').style.display='block';
+    document.getElementById('gen-actions').style.display='flex';
+    document.getElementById('gen-actions').style.flexDirection='column';
+    document.getElementById('gen-actions').style.gap='10px';
+    document.getElementById('gen-actions').style.width='100%';
+    document.getElementById('gen-actions').style.maxWidth='300px';
+  }
+}
+
+function retryGenerate(){generateAndProceed();}
+function proceedWithoutQuiz(){curQuestions=null;if(curMode==='test')launchReadingTest();else launchRSVP();}
+
+async function callClaudeAPI(text,title){
+  const key=loadKey();
+  if(!key)throw new Error('No API key set. Go to Settings to add your key.');
+  const excerpt=text.split(/\s+/).slice(0,6000).join(' ');
+  const prompt=`You are a reading comprehension expert. Generate exactly 6 multiple choice questions to test reading comprehension of the text below.
+
+Rules:
+- Each question has exactly 4 answer options
+- Exactly 1 correct answer per question
+- "ans" = 0-indexed position of the correct answer (0, 1, 2, or 3)
+- Cover: main ideas, specific details, inferences, author's purpose, and vocabulary in context
+- Range from easy recall to challenging inference
+- All answers must be clearly supported by the text
+- Make wrong options plausible — not obviously incorrect
+
+Return ONLY a valid JSON array. No markdown, no code fences, no explanation:
+[{"q":"...","opts":["...","...","...","..."],"ans":0},...]
+
+TEXT: ${title}
+${excerpt}`;
+
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({model:'claude-opus-4-5',max_tokens:2000,messages:[{role:'user',content:prompt}]})
+  });
+  if(!res.ok){
+    let msg='API error '+res.status;
+    try{const d=await res.json();msg=d.error?.message||msg;}catch{}
+    throw new Error(msg);
+  }
+  const data=await res.json();
+  const raw=data.content[0].text.trim();
+  const match=raw.match(/\[[\s\S]*\]/);
+  if(!match)throw new Error('Unexpected response format from API');
+  const questions=JSON.parse(match[0]);
+  if(!Array.isArray(questions)||questions.length===0)throw new Error('No questions returned');
+  return questions;
+}
+
+// ── READING TEST ───────────────────────────────────────────────
+function launchReadingTest(){
+  document.getElementById('reading-title').textContent=curPassage.title;
+  document.getElementById('reading-body').textContent=curPassage.text;
+  document.getElementById('reading-timer').textContent='00:00';
+  document.getElementById('reading-sub').textContent='Tap the text below to start';
+  document.getElementById('reading-hint').style.display='block';
+  document.getElementById('reading-done').style.display='none';
+  readActive=false;readStart=null;clearReadingTimer();
+  showScreen('s-reading');
+}
+
+function handleReadingClick(){
+  if(!readActive){
+    readActive=true;readStart=Date.now();
+    document.getElementById('reading-sub').textContent='Reading… tap Done when finished';
+    document.getElementById('reading-hint').style.display='none';
+    document.getElementById('reading-done').style.display='block';
+    readTimer=setInterval(()=>{
+      const e=Math.floor((Date.now()-readStart)/1000);
+      document.getElementById('reading-timer').textContent=`${String(Math.floor(e/60)).padStart(2,'0')}:${String(e%60).padStart(2,'0')}`;
+    },1000);
+  }
+}
+
+function finishReading(){
+  if(!readActive||!readStart)return;
+  clearReadingTimer();
+  const elapsed=(Date.now()-readStart)/1000;
+  const wc=curPassage.text.split(/\s+/).filter(w=>w).length;
+  sessWPM=Math.round(wc/(elapsed/60));
+  if(curQuestions)startQuiz();
+  else showResults();
+}
+
+function clearReadingTimer(){
+  if(readTimer){clearInterval(readTimer);readTimer=null;}
+  readActive=false;
+}
+
+// ── RSVP ──────────────────────────────────────────────────────
+function launchRSVP(){
+  rsvpWords=curPassage.text.split(/\s+/).filter(w=>w);
+  rsvpIdx=0;rsvpPaused=false;
+  document.getElementById('rsvp-title').textContent=curPassage.title;
+  document.getElementById('rsvp-wpm-n').textContent=rsvpWPM;
+  document.getElementById('rsvp-ready').style.display='flex';
+  document.getElementById('rsvp-run').style.display='none';
+  document.getElementById('rsvp-word').textContent='—';
+  document.getElementById('rsvp-bar-f').style.width='0%';
+  document.getElementById('rsvp-count').textContent=`0 / ${rsvpWords.length}`;
+  showScreen('s-rsvp');
+}
+
+// ── RSVP FONT FIX: dynamic sizing by word length ───────────────
+function setRSVPWord(word){
+  const el=document.getElementById('rsvp-word');
+  el.textContent=word;
+  const L=word.length;
+  const size=L<=4?54:L<=6?48:L<=8?42:L<=10?34:L<=13?27:L<=17?22:18;
+  el.style.fontSize=size+'px';
+}
+
+function startRSVP(){
+  stopRSVP();
+  rsvpIdx=0;rsvpPaused=false;
+  document.getElementById('rsvp-ready').style.display='none';
+  document.getElementById('rsvp-run').style.display='flex';
+  document.getElementById('rsvp-pause').textContent='⏸';
+  scheduleRSVP();
+}
+
+function scheduleRSVP(){
+  const delay=Math.round(60000/rsvpWPM);
+  rsvpTimer=setInterval(()=>{
+    if(rsvpPaused)return;
+    if(rsvpIdx>=rsvpWords.length){
+      stopRSVP();sessWPM=rsvpWPM;
+      if(curQuestions)startQuiz();else showResults();
+      return;
+    }
+    setRSVPWord(rsvpWords[rsvpIdx]);
+    const pct=((rsvpIdx+1)/rsvpWords.length*100).toFixed(1);
+    document.getElementById('rsvp-bar-f').style.width=pct+'%';
+    document.getElementById('rsvp-count').textContent=`${rsvpIdx+1} / ${rsvpWords.length}`;
+    rsvpIdx++;
+  },delay);
+}
+
+function stopRSVP(){if(rsvpTimer){clearInterval(rsvpTimer);rsvpTimer=null;}}
+
+function toggleRSVP(){
+  rsvpPaused=!rsvpPaused;
+  document.getElementById('rsvp-pause').textContent=rsvpPaused?'▶':'⏸';
+}
+
+function changeSpeed(delta){
+  rsvpWPM=Math.max(50,Math.min(800,rsvpWPM+delta));
+  document.getElementById('rsvp-wpm-n').textContent=rsvpWPM;
+  if(rsvpTimer){stopRSVP();scheduleRSVP();}
+}
+
+// ── QUIZ ──────────────────────────────────────────────────────
+function startQuiz(){
+  quizIdx=0;quizAnswers=[];
+  showScreen('s-quiz');renderQ();
+}
+
+function renderQ(){
+  const q=curQuestions[quizIdx];
+  const tot=curQuestions.length;
+  document.getElementById('quiz-num').textContent=`Question ${quizIdx+1} of ${tot}`;
+  document.getElementById('quiz-q').textContent=q.q;
+  document.getElementById('quiz-bar-f').style.width=`${(quizIdx/tot)*100}%`;
+  document.getElementById('quiz-opts').innerHTML=q.opts.map((o,i)=>
+    `<button class="qopt" onclick="answerQ(${i})">${String.fromCharCode(65+i)}. ${o}</button>`
+  ).join('');
+}
+
+function answerQ(idx){
+  const q=curQuestions[quizIdx];
+  quizAnswers.push({sel:idx,cor:q.ans,question:q.q,opts:q.opts});
+  document.querySelectorAll('.qopt').forEach((b,i)=>{
+    b.classList.add('done');
+    if(i===q.ans)b.classList.add('ok');
+    else if(i===idx&&idx!==q.ans)b.classList.add('wrong');
+  });
+  setTimeout(()=>{
+    quizIdx++;
+    if(quizIdx>=curQuestions.length)showResults();else renderQ();
+  },700);
+}
+
+// ── RESULTS ───────────────────────────────────────────────────
+function showResults(){
+  let comp=null;
+  if(quizAnswers.length>0){
+    const correct=quizAnswers.filter(a=>a.sel===a.cor).length;
+    comp=Math.round((correct/quizAnswers.length)*100);
+  }
+  // Save session
+  addSession({wpm:sessWPM,comp,mode:curMode,passage:curPassage.title,passageId:curPassageId,date:new Date().toLocaleDateString('en-CA'),ts:Date.now()});
+
+  const compStr=comp!==null?comp+'%':'N/A';
+  const comb=comp!==null?Math.round((Math.min(sessWPM/400,1)*50)+(comp/100*50)):Math.round(Math.min(sessWPM/400,1)*100);
+  let grade;
+  if(comb>=85)grade='🏆';else if(comb>=70)grade='⚡';else if(comb>=50)grade='📖';else grade='🌱';
+  document.getElementById('res-grade').textContent=grade;
+  document.getElementById('res-sub').textContent=buildSubtitle(sessWPM,comp);
+  document.getElementById('res-wpm').textContent=sessWPM;
+  document.getElementById('res-comp').textContent=compStr;
+  document.getElementById('res-insight').innerHTML=buildInsight(sessWPM,comp,curMode);
+
+  const ansLbl=document.getElementById('res-ans-lbl');
+  const ansList=document.getElementById('res-ans');
+  if(quizAnswers.length>0){
+    ansLbl.style.display='block';
+    ansList.innerHTML=quizAnswers.map(a=>{
+      const ok=a.sel===a.cor;
+      return `<div class="ans-item ${ok?'ok':'bad'}">
+        <div style="font-size:14px;flex-shrink:0">${ok?'✓':'✗'}</div>
+        <div style="flex:1;font-size:12px;line-height:1.4">${a.question}${!ok?`<div class="ans-correct">Correct: ${a.opts[a.cor]}</div>`:''}</div>
+      </div>`;
+    }).join('');
+  }else{
+    ansLbl.style.display='none';ansList.innerHTML='';
+  }
+  showScreen('s-results');
+}
+
+function buildSubtitle(wpm,comp){
+  const diff=wpm-238;
+  const compPart=comp!==null?` · ${comp}% comprehension`:'';
+  if(diff>50)return `${diff} WPM above average${compPart}`;
+  if(diff<-20)return `${Math.abs(diff)} WPM below average${compPart}`;
+  return `Right around average reading speed${compPart}`;
+}
+
+function buildInsight(wpm,comp,mode){
+  let p=[];
+  if(wpm<150)p.push('Developing pace — consistency matters more than speed right now. Aim to train 3× a week.');
+  else if(wpm<238)p.push(`At ${wpm} WPM you're just below the adult average of 238. You'll cross it soon with regular practice.`);
+  else if(wpm<400)p.push(`Strong pace — ${wpm-238} WPM above average. At this speed you'd finish a 300-page book in ~${Math.round(300*250/wpm)} hours.`);
+  else p.push(`${wpm} WPM is genuinely fast. A 300-page book would take you about ${Math.round(300*250/wpm)} hours.`);
+  if(comp===null)p.push('Add your API key in Settings to unlock AI comprehension questions for uploaded texts.');
+  else if(comp<50)p.push('Comprehension is low — try slowing down. Speed without understanding is not reading.');
+  else if(comp<75)p.push('Decent comprehension. Focus on staying engaged rather than rushing the words.');
+  else p.push('Strong comprehension! Your speed and understanding are working together.');
+  if(mode==='rsvp')p.push('Tip: RSVP builds pace. Switch to Reading Test occasionally to verify it transfers to natural reading.');
+  return p.join(' ');
+}
+
+// ── HOME ──────────────────────────────────────────────────────
+function refreshHome(){
+  loadSess();
+  const hasSess=sessions.length>0;
+  if(!hasSess){
+    document.getElementById('ring-n').textContent='—';
+    document.getElementById('ring-f').setAttribute('stroke-dasharray','0 389.6');
+    document.getElementById('wpm-lv').textContent='Complete a session to begin';
+    document.getElementById('st-sess').textContent='0';
+    document.getElementById('st-best').textContent='—';
+    document.getElementById('st-comp').textContent='—';
+  } else {
+    const withComp=sessions.filter(s=>s.comp!==null);
+    const avgWPM=Math.round(sessions.reduce((s,x)=>s+x.wpm,0)/sessions.length);
+    const bestWPM=Math.max(...sessions.map(x=>x.wpm));
+    const avgComp=withComp.length?Math.round(withComp.reduce((s,x)=>s+x.comp,0)/withComp.length):null;
+    const pct=Math.min(avgWPM/500,1);
+    document.getElementById('ring-n').textContent=avgWPM;
+    document.getElementById('ring-f').setAttribute('stroke-dasharray',`${pct*389.6} 389.6`);
+    document.getElementById('wpm-lv').textContent=wpmLevel(avgWPM);
+    document.getElementById('st-sess').textContent=sessions.length;
+    document.getElementById('st-best').textContent=bestWPM;
+    document.getElementById('st-comp').textContent=avgComp!==null?avgComp+'%':'—';
+  }
+  document.getElementById('streak-n').textContent=calcStreak()+'🔥';
+}
+
+function wpmLevel(w){
+  if(w<150)return '📖 Developing reader';
+  if(w<238)return '📚 Below average';
+  if(w<350)return '⚡ Above average';
+  if(w<500)return '🚀 Fast reader';
   return '🏆 Speed reader';
 }
 
-function calcStreak() {
-  if (!sessions.length) return 0;
-  const dates = [...new Set(sessions.map(s => s.date))].sort().reverse();
-  const today = new Date().toLocaleDateString('en-CA');
-  const yesterday = new Date(Date.now()-86400000).toLocaleDateString('en-CA');
-  if (dates[0] !== today && dates[0] !== yesterday) return 0;
-  let streak = 1;
-  for (let i = 1; i < dates.length; i++) {
-    const prev = new Date(dates[i-1]);
-    const curr = new Date(dates[i]);
-    const diff = (prev - curr) / 86400000;
-    if (Math.round(diff) === 1) streak++;
-    else break;
+function calcStreak(){
+  if(!sessions.length)return 0;
+  const dates=[...new Set(sessions.map(s=>s.date))].sort().reverse();
+  const today=new Date().toLocaleDateString('en-CA');
+  const yest=new Date(Date.now()-86400000).toLocaleDateString('en-CA');
+  if(dates[0]!==today&&dates[0]!==yest)return 0;
+  let streak=1;
+  for(let i=1;i<dates.length;i++){
+    const diff=(new Date(dates[i-1])-new Date(dates[i]))/86400000;
+    if(Math.round(diff)===1)streak++;else break;
   }
   return streak;
 }
 
-// ─── FLOW ─────────────────────────────────────────────────────
-function startFlow(mode) {
-  currentMode = mode;
-  selectedPassage = null;
-  document.getElementById('passage-flow-title').textContent =
-    mode === 'test' ? '📖 Reading Test' : '⚡ RSVP Sprint';
-  renderPassageGrid();
-  document.getElementById('passage-next-btn').style.display = 'none';
-  showScreen('s-passage');
-}
-
-function renderPassageGrid() {
-  const grid = document.getElementById('passage-grid');
-  grid.innerHTML = PASSAGE_ORDER.map(pid => {
-    const p = PASSAGES[pid];
-    const wc = p.text.split(/\s+/).filter(w=>w).length;
-    return `<div class="passage-card" id="pc-${pid}" onclick="selectPassage('${pid}')">
-      <div class="p-icon">${p.icon}</div>
-      <div class="p-meta">
-        <div class="p-title">${p.title}</div>
-        <div class="p-genre">${p.genre}</div>
-        <div class="p-words">${wc} words · ~${Math.round(wc/238)} min read</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function selectPassage(pid) {
-  selectedPassage = pid;
-  document.querySelectorAll('.passage-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('pc-'+pid).classList.add('selected');
-  document.getElementById('passage-next-btn').style.display = 'block';
-}
-
-function startSession() {
-  if (!selectedPassage) return;
-  if (currentMode === 'test') startReadingTest();
-  else startRSVPSession();
-}
-
-// ─── READING TEST ──────────────────────────────────────────────
-function startReadingTest() {
-  const p = PASSAGES[selectedPassage];
-  document.getElementById('reading-title').textContent = p.title;
-  document.getElementById('reading-text').textContent = p.text;
-  document.getElementById('reading-timer').textContent = '00:00';
-  document.getElementById('reading-status').textContent = 'Tap the passage to start the timer';
-  document.getElementById('reading-hint').style.display = 'block';
-  document.getElementById('reading-done-btn').style.display = 'none';
-  readingActive = false;
-  readingStartTime = null;
-  clearReadingTimer();
-  showScreen('s-reading');
-}
-
-function handleReadingClick() {
-  if (!readingActive) {
-    readingActive = true;
-    readingStartTime = Date.now();
-    document.getElementById('reading-status').textContent = 'Reading... tap "Done" when finished';
-    document.getElementById('reading-hint').style.display = 'none';
-    document.getElementById('reading-done-btn').style.display = 'block';
-    readingTimerInterval = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - readingStartTime) / 1000);
-      const m = String(Math.floor(elapsed/60)).padStart(2,'0');
-      const s = String(elapsed%60).padStart(2,'0');
-      document.getElementById('reading-timer').textContent = m+':'+s;
-    }, 1000);
-  }
-}
-
-function finishReading() {
-  if (!readingActive || !readingStartTime) return;
-  clearReadingTimer();
-  const elapsed = (Date.now() - readingStartTime) / 1000;
-  const p = PASSAGES[selectedPassage];
-  const wc = p.text.split(/\s+/).filter(w=>w).length;
-  sessionWPM = Math.round(wc / (elapsed / 60));
-  startQuiz();
-}
-
-function clearReadingTimer() {
-  if (readingTimerInterval) { clearInterval(readingTimerInterval); readingTimerInterval = null; }
-  readingActive = false;
-}
-
-// ─── RSVP ─────────────────────────────────────────────────────
-function startRSVPSession() {
-  const p = PASSAGES[selectedPassage];
-  rsvpWords = p.text.split(/\s+/).filter(w=>w);
-  rsvpWordIndex = 0;
-  rsvpPaused = false;
-  document.getElementById('rsvp-title').textContent = p.title;
-  document.getElementById('rsvp-wpm-val').textContent = rsvpTargetWPM;
-  document.getElementById('rsvp-ready').style.display = 'flex';
-  document.getElementById('rsvp-running').style.display = 'none';
-  document.getElementById('rsvp-word').textContent = '—';
-  document.getElementById('rsvp-progress-fill').style.width = '0%';
-  document.getElementById('rsvp-count').textContent = `0 / ${rsvpWords.length}`;
-  showScreen('s-rsvp');
-}
-
-function startRSVP() {
-  stopRSVP();
-  rsvpWordIndex = 0;
-  rsvpPaused = false;
-  document.getElementById('rsvp-ready').style.display = 'none';
-  document.getElementById('rsvp-running').style.display = 'flex';
-  document.getElementById('rsvp-pause-btn').textContent = '⏸';
-  const delay = Math.round(60000 / rsvpTargetWPM);
-  rsvpInterval = setInterval(() => {
-    if (rsvpPaused) return;
-    if (rsvpWordIndex >= rsvpWords.length) {
-      stopRSVP();
-      sessionWPM = rsvpTargetWPM;
-      startQuiz();
-      return;
-    }
-    document.getElementById('rsvp-word').textContent = rsvpWords[rsvpWordIndex];
-    const pct = ((rsvpWordIndex+1)/rsvpWords.length*100).toFixed(1);
-    document.getElementById('rsvp-progress-fill').style.width = pct+'%';
-    document.getElementById('rsvp-count').textContent = `${rsvpWordIndex+1} / ${rsvpWords.length}`;
-    rsvpWordIndex++;
-  }, delay);
-}
-
-function stopRSVP() {
-  if (rsvpInterval) { clearInterval(rsvpInterval); rsvpInterval = null; }
-}
-
-function toggleRSVP() {
-  rsvpPaused = !rsvpPaused;
-  document.getElementById('rsvp-pause-btn').textContent = rsvpPaused ? '▶' : '⏸';
-}
-
-function changeSpeed(delta) {
-  rsvpTargetWPM = Math.max(50, Math.min(800, rsvpTargetWPM + delta));
-  document.getElementById('rsvp-wpm-val').textContent = rsvpTargetWPM;
-  if (rsvpInterval) {
-    // restart at new speed without resetting position
-    stopRSVP();
-    const delay = Math.round(60000 / rsvpTargetWPM);
-    rsvpInterval = setInterval(() => {
-      if (rsvpPaused) return;
-      if (rsvpWordIndex >= rsvpWords.length) {
-        stopRSVP(); sessionWPM = rsvpTargetWPM; startQuiz(); return;
-      }
-      document.getElementById('rsvp-word').textContent = rsvpWords[rsvpWordIndex];
-      const pct = ((rsvpWordIndex+1)/rsvpWords.length*100).toFixed(1);
-      document.getElementById('rsvp-progress-fill').style.width = pct+'%';
-      document.getElementById('rsvp-count').textContent = `${rsvpWordIndex+1} / ${rsvpWords.length}`;
-      rsvpWordIndex++;
-    }, delay);
-  }
-}
-
-// ─── QUIZ ─────────────────────────────────────────────────────
-function startQuiz() {
-  quizIndex = 0;
-  quizAnswers = [];
-  showScreen('s-quiz');
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const p = PASSAGES[selectedPassage];
-  const q = p.questions[quizIndex];
-  document.getElementById('quiz-num').textContent = `Question ${quizIndex+1} of ${p.questions.length}`;
-  document.getElementById('quiz-q').textContent = q.q;
-  document.getElementById('quiz-prog-fill').style.width = `${((quizIndex)/p.questions.length)*100}%`;
-  const opts = document.getElementById('quiz-opts');
-  opts.innerHTML = q.opts.map((o,i) =>
-    `<button class="quiz-opt" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</button>`
-  ).join('');
-}
-
-function answerQuiz(idx) {
-  const p = PASSAGES[selectedPassage];
-  const q = p.questions[quizIndex];
-  quizAnswers.push({selected:idx, correct:q.ans, question:q.q, options:q.opts});
-  const btns = document.querySelectorAll('.quiz-opt');
-  btns.forEach((b,i) => {
-    b.classList.add('answered');
-    if (i === q.ans) b.classList.add('correct');
-    else if (i === idx && idx !== q.ans) b.classList.add('wrong');
-  });
-  setTimeout(() => {
-    quizIndex++;
-    if (quizIndex >= p.questions.length) showResults();
-    else renderQuestion();
-  }, 700);
-}
-
-// ─── RESULTS ──────────────────────────────────────────────────
-function showResults() {
-  const correct = quizAnswers.filter(a => a.selected === a.correct).length;
-  const comp = Math.round((correct / quizAnswers.length) * 100);
-  const p = PASSAGES[selectedPassage];
-
-  // Save session
-  const sess = {
-    wpm: sessionWPM,
-    comp,
-    mode: currentMode,
-    passage: p.title,
-    passageId: selectedPassage,
-    date: new Date().toLocaleDateString('en-CA'),
-    timestamp: Date.now()
-  };
-  addSession(sess);
-
-  // Grade
-  const combined = Math.round((Math.min(sessionWPM/400,1)*50) + (comp/100*50));
-  let grade, color;
-  if (combined >= 85) { grade = '🏆'; color = 'var(--g)'; }
-  else if (combined >= 70) { grade = '⚡'; color = 'var(--a)'; }
-  else if (combined >= 50) { grade = '📖'; color = 'var(--y)'; }
-  else { grade = '🌱'; color = 'var(--r)'; }
-
-  document.getElementById('results-grade').textContent = grade;
-  document.getElementById('results-grade').style.fontSize = '80px';
-  document.getElementById('results-subtitle').textContent = resultSubtitle(sessionWPM, comp);
-  document.getElementById('res-wpm').textContent = sessionWPM;
-  document.getElementById('res-comp').textContent = comp+'%';
-
-  // Insight
-  document.getElementById('res-insight').innerHTML =
-    `<div class="insight-text">${buildInsight(sessionWPM, comp, currentMode)}</div>`;
-
-  // Answers breakdown
-  document.getElementById('res-answers').innerHTML = quizAnswers.map((a,i) => {
-    const ok = a.selected === a.correct;
-    return `<div class="ans-item ${ok?'ok':'bad'}">
-      <div class="ans-icon">${ok?'✓':'✗'}</div>
-      <div class="ans-text">
-        ${a.question}
-        ${!ok ? `<div class="ans-correct">Correct: ${a.options[a.correct]}</div>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-
-  showScreen('s-results');
-}
-
-function resultSubtitle(wpm, comp) {
-  const avg = 238;
-  const diff = wpm - avg;
-  if (diff > 0) return `${diff} WPM above average · ${comp}% comprehension`;
-  if (diff < 0) return `${Math.abs(diff)} WPM below average · ${comp}% comprehension`;
-  return `Right at the average reading speed · ${comp}% comprehension`;
-}
-
-function buildInsight(wpm, comp, mode) {
-  const parts = [];
-  if (wpm < 150) parts.push("Your pace is developing — that's totally normal for someone starting out. Consistency matters more than speed right now.");
-  else if (wpm < 238) parts.push("You're reading just below the adult average of 238 WPM. With regular practice, you'll cross that threshold quickly.");
-  else if (wpm < 400) parts.push(`At ${wpm} WPM you're already above average. You're reading ${wpm - 238} words per minute faster than most adults.`);
-  else parts.push(`${wpm} WPM is genuinely fast. At this pace you could read a 300-page book in about ${Math.round(300*250/wpm)} hours.`);
-
-  if (comp < 50) parts.push("Comprehension is low — try slowing down. Speed without understanding isn't reading.");
-  else if (comp < 75) parts.push("Comprehension is decent. Try to stay focused and reduce re-reading habits to improve both speed and retention.");
-  else if (comp < 100) parts.push("Strong comprehension! You're reading efficiently.");
-  else parts.push("Perfect comprehension. Your speed and understanding are both working together — great session.");
-
-  if (mode === 'rsvp') parts.push("Tip: RSVP trains your brain to keep pace. Switch to Reading Test occasionally to check how it transfers to natural reading.");
-  return parts.join(' ');
-}
-
-// ─── HISTORY ──────────────────────────────────────────────────
-function renderHistory() {
-  loadData();
-  const body = document.getElementById('history-body');
-
-  if (!sessions.length) {
-    body.innerHTML = `<div class="empty-history">
-      <div class="empty-history-icon">📊</div>
-      <div class="empty-history-text">No sessions yet.<br>Complete your first training to see progress here.</div>
-    </div>`;
-    if (wpmChart) { wpmChart.destroy(); wpmChart = null; }
-    document.getElementById('wpm-chart').getContext('2d').clearRect(0,0,9999,9999);
+// ── HISTORY ───────────────────────────────────────────────────
+function renderHistory(){
+  loadSess();
+  const body=document.getElementById('hist-body');
+  if(!sessions.length){
+    body.innerHTML=`<div class="empty"><div class="empty-icon">📊</div><div class="empty-t">No sessions yet.<br>Complete your first training to see progress here.</div></div>`;
+    if(wpmChart){wpmChart.destroy();wpmChart=null;}
     return;
   }
-
-  // Chart
-  const last10 = sessions.slice(-10);
-  const labels = last10.map((_,i) => `#${sessions.length - last10.length + i + 1}`);
-  const wpmData = last10.map(s => s.wpm);
-  const compData = last10.map(s => s.comp);
-
-  if (wpmChart) wpmChart.destroy();
-  const ctx = document.getElementById('wpm-chart').getContext('2d');
-  wpmChart = new Chart(ctx, {
+  const last10=sessions.slice(-10);
+  const labels=last10.map((_,i)=>'#'+(sessions.length-last10.length+i+1));
+  if(wpmChart)wpmChart.destroy();
+  const ctx=document.getElementById('wpm-chart').getContext('2d');
+  wpmChart=new Chart(ctx,{
     type:'line',
-    data:{
-      labels,
-      datasets:[
-        {label:'WPM',data:wpmData,borderColor:'#818cf8',backgroundColor:'rgba(129,140,248,0.1)',tension:.4,pointRadius:4,pointBackgroundColor:'#818cf8',yAxisID:'wpm'},
-        {label:'Comp %',data:compData,borderColor:'#34d399',backgroundColor:'rgba(52,211,153,0.08)',tension:.4,pointRadius:4,pointBackgroundColor:'#34d399',yAxisID:'comp'}
-      ]
-    },
-    options:{
-      responsive:true,animation:{duration:600},
-      plugins:{legend:{labels:{color:'#94a3b8',font:{size:11,family:'DM Sans'}}}},
+    data:{labels,datasets:[
+      {label:'WPM',data:last10.map(s=>s.wpm),borderColor:'#818cf8',backgroundColor:'rgba(129,140,248,0.1)',tension:.4,pointRadius:4,pointBackgroundColor:'#818cf8',yAxisID:'wpm'},
+      {label:'Comp %',data:last10.map(s=>s.comp),borderColor:'#34d399',backgroundColor:'rgba(52,211,153,0.08)',tension:.4,pointRadius:4,pointBackgroundColor:'#34d399',yAxisID:'comp'}
+    ]},
+    options:{responsive:true,animation:{duration:500},
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:11}}}},
       scales:{
         x:{ticks:{color:'#5a5a80',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
         wpm:{position:'left',ticks:{color:'#818cf8',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}},
-        comp:{position:'right',ticks:{color:'#34d399',font:{size:10},callback:v=>v+'%'},grid:{display:false},min:0,max:100}
-      }
-    }
+        comp:{position:'right',ticks:{color:'#34d399',font:{size:10},callback:v=>v!=null?v+'%':''},grid:{display:false},min:0,max:100}
+      }}
   });
-
-  // Session list
-  body.innerHTML = `<div class="section-title" style="margin-bottom:8px">Recent sessions</div>
-    <div class="sessions-list">
-    ${[...sessions].reverse().map(s => `
-    <div class="sess-card">
-      <div class="sess-mode" style="background:${s.mode==='test'?'var(--a-dim)':'var(--g-dim)'}">
-        ${s.mode==='test'?'📖':'⚡'}
-      </div>
-      <div class="sess-info">
-        <div class="sess-title">${s.passage}</div>
-        <div class="sess-date">${s.date} · ${s.mode === 'test' ? 'Reading Test' : 'RSVP Sprint'}</div>
-      </div>
-      <div class="sess-stats">
-        <div class="sess-wpm">${s.wpm}</div>
-        <div class="sess-comp">${s.comp}% comp</div>
-      </div>
+  body.innerHTML=`<div class="label" style="margin-bottom:8px">Recent sessions</div>
+    <div class="sess-list">${[...sessions].reverse().map(s=>`
+    <div class="sess">
+      <div class="sess-ic" style="background:${s.mode==='test'?'var(--a-dim)':'var(--g-dim)'}">${s.mode==='test'?'📖':'⚡'}</div>
+      <div class="sess-info"><div class="sess-title">${s.passage}</div><div class="sess-date">${s.date}</div></div>
+      <div><div class="sess-wpm">${s.wpm}</div><div class="sess-comp">${s.comp!=null?s.comp+'%':'—'}</div></div>
     </div>`).join('')}
     </div>`;
 }
 
-// ─── INIT ─────────────────────────────────────────────────────
-loadData();
-refreshHome();
-showScreen('s-home');
+// ── INIT ──────────────────────────────────────────────────────
+checkSetup();
 </script>
 </body>
 </html>
